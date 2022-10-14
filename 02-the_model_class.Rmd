@@ -1,0 +1,74 @@
+# The model specification
+
+Models are specified as a C++ `class`/`struct` that should have the following
+signature
+
+```{cc, echo=TRUE, eval=FALSE}
+struct model{
+  // data statements
+  void preProcess(){
+    // preprocess (called only once) here
+  } 
+
+  template < class varType, class tensorType, bool storeNames>
+  void operator()(amt::amtModel<varType,tensorType,storeNames> &model__){
+    // specifcation of model target density ++ here
+  } 
+}; // end of struct
+```
+
+The name of the `class`/`struct` is arbitrary
+
+## A simple worked example {#simple-worked-example} 
+
+Now consider specifying the model $y_i \sim$ iid $N(\mu,\exp(\lambda)),\;i=1,\dots,n$ (with
+flat priors on $\mu,\lambda$) for a given data set $\mathbf y$. We wish to sample from the posterior distribution of $(\mu,\lambda)$, and in addition, get samples from the posterior distribution of $\sigma=\exp(0.5\lambda)$.
+
+The model class would look something like
+```{cc,echo=TRUE,eval=FALSE}
+using namespace amt;
+struct model{
+  
+  DATA_VECTOR(y); // data to be passed from R
+  
+  void preProcess(){} // not used in this example 
+
+  template < class varType, class tensorType, bool storeNames>
+  void operator()(amt::amtModel<varType,tensorType,storeNames> &model__){
+    
+    PARAMETER_SCALAR(mu); // parameter (sampled quantity)
+    PARAMETER_SCALAR(lambda); // parameter (sampled quantity)
+    // note; all variables depending on the parameters must be of type varType
+    varType sigma = exp(0.5*lambda);
+    // add data likelihood to the model object
+    model__+=normal_ld(y,mu,sigma);
+    // add sigma as a quantity to produce samples of
+    model__.generated(sigma,"sigma");
+  } 
+}; // end of struct
+```
+
+When stored in file `basic_model.cpp`, the above model specification may be compiled using
+
+```{r,echo=TRUE,eval=eval.examples}
+model <- pdmphmc::build("basic_model.cpp")
+```
+
+Then let's simulate some data and run the model:
+```{r,echo=TRUE,eval=eval.examples}
+set.seed(123)
+y <- rnorm(10) # y is iid N(0,1) with n=10
+fit <- pdmphmc::run(model,data=list(y=y))
+```
+
+Finally, get a summary of the sampled- and generated quantities, based on `rstan::monitor`:
+```{r,echo=TRUE,eval=eval.examples}
+fit
+```
+
+Further functions exist for inspecting the output, e.g. trace plots
+```{r,echo=TRUE,eval=eval.examples}
+pdmphmc::trace.plot(fit,"sigma")
+```
+
+In the next chapter, a more detailed summary of the possibilities of the model specification is given.

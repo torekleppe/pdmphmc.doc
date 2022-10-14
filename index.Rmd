@@ -1,0 +1,43 @@
+--- 
+title: "pdmphmc - numerical generalized randomized HMC processes for `R`"
+author: "Tore Selland Kleppe"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib]
+# url: your book url like https://bookdown.org/yihui/bookdown
+# cover-image: path to the social sharing image like images/cover.jpg
+description: |
+  Description in index.Rmd
+link-citations: yes
+---
+
+# About
+
+This document provides documentation of the `pdmphmc`(piecewise deterministic Markov process HMC) package. 
+
+The package is available on github and is most easily installed via `devtools::install_github("https://github.com/torekleppe/pdmphmc")` (requires the `devtools` package)
+
+The package implements, with some modifications and substantial additions, the methodology of @kleppe_CTHMC, @kleppe_amt.
+
+
+## What is `pdmphmc`?
+
+`pdmphmc` is a system for carrying out probability computations,  typically associated with Bayesian statistical modelling. `pdmphmc` consist of
+
+- A very flexible system for specifying Bayesian statistical models using C++ classes.
+
+- An implementation of numerical generalized randomized Hamiltonian Monte Carlo samplers for MCMC-like computations for models specified in the above mentioned system. 
+
+## Why `pdmphmc`?
+
+Many packages provides computational methods for Bayesian statistical models. `pdmphmc` is designed to be *computationally fast and stable, even for high-dimensional models and/or models where the posterior distribution exhibits complicated non-linear dependence structures*. Particular emphasis has been on developing and implementing methodology suitable for fitting non-linear hierarchical models.
+
+## Prerequisites
+
+- This documentation assumes basic familiarity with the C++ programming language.
+
+- This documentation assumes modest familiarity with the Eigen C++ library, see e.g. https://eigen.tuxfamily.org/dox/group__QuickRefPage.html 
+
+- The package relies on the Stan Math Library (https://mc-stan.org/users/interfaces/math) for automatic differentiation. In addition, the complete Stan Math Library (including all probability density functions etc) are also available within the modeling facilities of this package. Hence, some familiarity with the probability densities etc documented in https://mc-stan.org/docs/functions-reference/index.html may be useful.
+

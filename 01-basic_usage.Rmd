@@ -1,0 +1,26 @@
+
+```{r, echo=FALSE}
+eval.examples=TRUE
+```
+
+# `pdmphmc` "Hello World"
+
+**This section assumes that `pdmphmc` R-package has already been installed.**
+
+## Requirements
+
+Other than a working installation of `R` and `R`-package `rstan` (with dependencies), the `pdmphmc` package requires a working C++ compiler.
+
+- On mac, linux, this is typically available as `g++` on the command line. If you get an error message when running e.g. `g++ -v` in the command line, you need to get the `g++` for your system.
+- On Windows, testing of `pdmphmc` is done using the GCC 10/MinGW-w64 compiler toolchain that comes with the Rtools (https://cran.r-project.org/bin/windows/Rtools/), but it should also be noted that it should be possible to use different compilers.
+
+## Check your installation
+
+The simplest way to check your installation is to try to run the `testSystem()`
+```{r,echo=TRUE,eval=eval.examples}
+success <- pdmphmc::testSystem()
+```
+If the last line printed reads "model ran successfully", you are good to go.
+
+If not, there is something wrong with the setup for your system. A good starting point for resolving compilation issues is first check that your installation of package `rstan` is really working, see https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started for details. 
+

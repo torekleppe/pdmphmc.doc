@@ -1,0 +1,231 @@
+# Model specification details
+
+## `DATA_*` statements
+
+The facility for passing data from `R` to the model is based on the `DATA_*` preprocessor macros. Currently there are 6 types of these, corresponding to different types of C++ storage in the model:
+```{cc,eval=FALSE}
+DATA_DOUBLE(<dataname>); // C++ storage: double 
+DATA_INT(<dataname>); // C++ storage: int 
+DATA_VECTOR(<dataname>); // C++ storage: Eigen::VectorXd 
+DATA_IVECTOR(<dataname>); // C++ storage: Eigen::VectorXi 
+DATA_MATRIX(<dataname>); // C++ storage: Eigen::MatrixXd 
+DATA_IMATRIX(<dataname>); // C++ storage: Eigen::MatrixXi 
+```
+
+After putting one or multiple `DATA_*` statements at the **start of the model class**, a object with name `<dataname>` and the indicated type will be available throughout the class. 
+
+The objects initiated with `DATA_*` statements are filled using the `data` argument of the `pdmphmc::run` function. E.g. if the model class contains
+```{cc,eval=FALSE}
+struct model{
+  DATA_DOUBLE(dd);
+  DATA_MATRIX(mat);
+  // rest of model spec here
+};
+```
+then calls to `pdmphmc::run` must be done with
+something like
+```{r,echo=TRUE,eval=FALSE}
+# assuming the model has been built into R-variable "model"
+fit <- run(model,data=list(dd=1.23,mat=matrix(rnorm(4),2,2)))
+```
+
+The data are read into the C++ program before any sampling etc is done.
+
+
+## The `preProcess()` function
+
+The `preProcess()` is intended for restructuring data, reading data directly from a file etc.
+
+The pre-process function gets called after data are read into C++/is available as objects `<dataname>`. E.g. continuing the example above, e.g.
+```{cc,eval=FALSE}
+struct model{
+  DATA_DOUBLE(dd);
+  DATA_MATRIX(mat);
+  double ddHalf_;
+  void preProcess(){
+    ddHalf_ = 0.5*dd;
+  }
+  // rest of model spec here
+};
+```
+the variable `ddHalf_` would contain `0.5*1.23` at the time of sampling if the same data as above are provided.
+
+
+
+## The `operator()()` function
+
+The `operator()()` function is used for specifying (in a broad sense) the target distribution, say $\pi(\boldsymbol \theta)$. 
+
+It should have the signature:
+```{cc,echo=TRUE,eval=FALSE}
+template < class varType, class tensorType, bool storeNames>
+  void operator()(amt::amtModel<varType,tensorType,storeNames> &model__){
+  }
+```
+The particular meaning of the templates etc is not important, but the
+user should be aware that all parameters, and all quantities depending
+on parameters should be of type `varType`^[So far, `varType` is either of type `stan::math::var` or `amt::amtVar` (see header `include/amtVar.hpp`).]. `varType`s could be used more
+or less as `double` types in C++.
+
+Further, the user should be aware of the `amt::amtModel` object by default named `model__`^[In principle it could be named something else, but this will break the `PARAMETER_*`-macros discussed below. Hence, if the argument to `operator()` is named something else, the user should provide calls similar to those defined by these macros (see `include/amt.hpp`)]. The `amt::amtModel` object keeps track of the names and dimensions of the parameters etc, the value of log-target distribution and so on.
+
+`operator()` typically consist of three parts: 
+
+- specifying the sampled quantities $\boldsymbol \theta$ using `PARAMETER_*` macros.
+- specifying the shape of the target distribution $\pi(\boldsymbol \theta)$.
+- specifying other quantities of interest for which samples are recorded.
+
+In what follows, each of these point are discussed in more detail:
+
+### The `PARAMETER_*` macros
+
+The sampled quantities (e.g. parameters, latent variables and so on) are specified using the `PARAMETER_*` macros:
+```{cc,echo=TRUE,eval=FALSE}
+PARAMETER_SCALAR(<name>,...); // C++ storage: varType
+PARAMETER_VECTOR(<name>,dim,...); 
+// C++ storage: Eigen::Matrix<varType,Eigen::Dynamic,1>  
+PARAMETER_MATRIX(name,dim1,dim2,...); 
+// C++ storage: Eigen::Matrix<varType,Eigen::Dynamic,Eigen::Dynamic>
+PARAMETER_SPD_MATRIX(name,dim,...);
+// C++ storage: amt::SPDmatrix<varType>
+```
+
+All of these macros presume that the argument to the `operator()`-function is named `model__`. After a call to e.g. `PARAMETER_VECTOR(<name>,dim,...);`, a vector of `varType`s of dimension `dim` and with name `<name>` will be available subsequently.
+
+The `SPDmatrix`class template is further explained in Chapter \@ref(amt-SPD-matrix)
+
+An optional argument - the default value - may be passed to each of the 
+`PARAMETER_*` macros. The default value is used when initiating the sampling, and **it is important that $\pi(\boldsymbol \theta)$ is defined when $\boldsymbol \theta$ corresponds to the default values**. If no default values is provided, the default value is implicitly set to $0$. 
+
+(Non-zero) default values could be either `double` scalars which are repeated to fill non-scalar variables, e.g.
+```{cc,echo=TRUE,eval=FALSE}
+PARAMETER_VECTOR(mu,4,1.0);// mu is intiated at (1.0,1.0,1.0,1.0)
+```
+
+Otherwise, the default values may be vectors/matrices of the same dimension(s) as the parameter, e.g.
+```{cc,echo=TRUE,eval=FALSE}
+Eigen::Vector muDefault(4);
+muDefault.setZero();
+muDefault(3) = 2.0;
+PARAMETER_VECTOR(mu,muDefault.size(),muDefault);
+// mu is intiated at (0.0,0.0,0.0,2.0)
+```
+
+One may even pass the dimension and default values of the parameters using the `DATA_*`:
+```{cc,eval=FALSE}
+struct model{
+  DATA_VECTOR(dvec);
+  void preProcess(){}
+  template < class varType, class tensorType, bool storeNames>
+  void operator()(amt::amtModel<varType,tensorType,storeNames> &model__){
+    PARAMETER_VECTOR(d,dvec.size(),dvec);
+    // d will have the dimension of dvec, and default values=dvec
+    // rest of model spec here
+  }
+};
+```
+
+Note that there are no facilities for specifying that certain elements $\boldsymbol \theta$ to be restricted to a certain range (e.g. positive). Hence the user is responsible for ensuring that suitable transformations are made to avoid numerical problems. See e.g. the log-transformation of the standard deviation in the example in Section \@ref(simple-worked-example) 
+
+
+### Specifying the shape of $\pi(\boldsymbol \theta)$.
+
+Specifying the shape of the target distribution is done using various overloaded `+=` operators applied to the `amt::amtModel` object. It is assumed that $\log \pi(\boldsymbol \theta)$ may be written as the sum of
+several log-densities.
+
+Two sets of such log-densities are available:
+
+- For fixed metric samplers and Riemannian samplers (see Chapter (ref:the-samplers) for details), a library of 
+log-densities with names ending with `_ld` or `_lm` are available under namesspace `amt`. These are further documented in Chapter \@ref(amt-lib)
+
+- For fixed metric samplers only, the complete set of `stan::math` functions with names ending with `_lpdf` or `_lpmf` (see https://mc-stan.org/docs/functions-reference/index.html) are available 
+
+Below are two examples, both specifying a 4-dimensional standard normal target distribution:
+```{cc,echo=TRUE,eval=FALSE}
+//...
+  template < class varType, class tensorType, bool storeNames>
+  void operator()(amt::amtModel<varType,tensorType,storeNames> &model__){
+    PARAMETER_VECTOR(x,4);
+    model__ += normal_ld(x,0.0,1.0); // amt version
+  }
+//...
+```
+
+```{cc,echo=TRUE,eval=FALSE}
+//...
+  template < class varType, class tensorType, bool storeNames>
+  void operator()(amt::amtModel<varType,tensorType,storeNames> &model__){
+    PARAMETER_VECTOR(x,4);
+    model__ += stan::math::normal_lpdf(x,0.0,1.0); // stan::math version
+  }
+//...
+```
+
+Further, more elaborate examples of model specifications are provided in Chapter \@ref(worked-examples).
+
+
+
+### Generated quantities
+
+Generated quantities are used in two ways:
+
+- It is often the case that one is interested in the posterior distribution of some auxiliary quantities which depend on the parameter $\boldsymbol \theta$. 
+
+- The `pdmphmc` package has the capability to compute "time-integrated" samples (see e.g. @kleppe_CTHMC, Equation 7 and Figure 3), which in certain cases may be much more efficient for estimating certain moments. Time integrated samples are computed for all generated quantities (and not the parameters, so if you want time-integrated samples of the parameters, pass them as generated quantities).
+
+To record such quantities, the `generated()` function (member of `amt::amtModel`) is used. There are several overloads of `generated()` allowing several types (scalars, vectors, matrices etc.) to be passed.
+
+The `generated()` functions have signatures similar to 
+`inline void generated(const <SOME TYPE>& value,const std::string& name)`, where `<SOME TYPE>` is a C++ type/template, such as e.g. `double`, `Eigen::VectorXd` or `varType`. `name` is the name used for the generated quantity in the output.
+
+Below is a complete example of the usage. First, the content of file `generated_model.cpp`:
+```{cc,echo=TRUE,eval=FALSE}
+using namespace amt;
+
+double quadNorm(const Eigen::VectorXd& x){
+  return(x.dot(x));
+}
+
+struct model{
+  void preProcess(){} // not used in this example 
+  template < class varType, class tensorType, bool storeNames>
+  void operator()(amt::amtModel<varType,tensorType,storeNames> &model__){
+    
+    PARAMETER_VECTOR(x,4); // parameter (sampled quantity)
+    model__+=normal_ld(x,0.0,1.0); // add standard normal log-density
+    
+    
+    // make the whole parameter a generated
+    model__.generated(asDouble(x),"x_gen"); 
+    // different transformations of x to be recored:
+    model__.generated(std::pow(asDouble(x(0)),3),"x1_cube");
+    model__.generated(exp(asDouble(x(1))),"x2_exp");
+    
+    double qn = quadNorm(asDouble(x));
+    model__.generated(qn,"quadraticNorm");
+    
+  } 
+}; // end of struct
+```
+Note that it is good practice to provide `double` values as the first argument to `generated()`. The double value of AD types `varType` obtains using the `asDouble()` function. 
+
+Then build and run the model:
+```{r,echo=TRUE,eval=eval.examples}
+model <- pdmphmc::build("generated_model.cpp")
+fit <- pdmphmc::run(model)
+fit
+```
+
+It is seen that discrete time samples (which reflect target distribution) are recorded (by default) for the parameters (in this case `x[1]`,...,`x[4]`) and the generated quantities (here `x_gen[1]`,...,`x_gen[4]`,`x1_cube`,`x2_exp`,`quadraticNorm`).
+
+Integrated samples for calculating moments with respect to the target distribution are recorded for the generated quantities only.
+
+Some minor comments related to performance are in order here:
+
+- As seen in the example above, `double` values (or vectors or matrices thereof) should ideally be passed to the `generated()` functions. This is in order of avoiding unnecessary AD computations. In particular, if the generated function is a complicated function of the parameters (for which function `quadNorm()` may serve as a placeholder), the computations leading up to the generated quantity should be done in double-variables.
+
+- In models where $\boldsymbol \theta$ is high-dimensional and parts of $\boldsymbol \theta$ are of less interest, the default behavior of storing samples of all of $\boldsymbol \theta$ may be overridden by using the `store.pars` argument in `pdmphmc::run()`. Reducing the number of stored quantities leads to both memory savings and savings in terms of computing time.
+
+
+
+

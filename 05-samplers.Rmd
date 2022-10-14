@@ -1,0 +1,86 @@
+
+# The sampling algorithms {#the-samplers} 
+
+
+As the name of the package indicates, the samplers in employed in this package are based on piecewise deterministic Markov processes (see e.g. @fearnhead2018) with Hamiltonian dynamic between events (see @kleppe_CTHMC).
+
+Two distinct such samplers are so far implemented: fixed mass (section \@ref(fixed-mass-sampler)) and Riemannian manifold (Section \@ref(Riemann-manifold)). The Hamiltonians, which are fully specifies the between event dynamics are provided below.
+
+The same set of numerical differential equation solvers (Section \@ref(ODE-solvers)) are used for both solvers. Finally, methods for adapting the scaling of the differential equations (Section \@ref(scaling-adaptation)) and the different available event intensities (Section \@ref(event-intensity)) are described below.
+
+
+The sampling algorithm to be used are chosen prior to the compilation `pdmphmc::build()`. By default, a fixed mass sampler is used.
+
+Whether to use the RM sampler or fixed metric sampler is inherently problem-specific. As a rule of thumb, if your target distribution involves complicated non-linear dependencies, or the scale of some subset of $\boldsymbol \theta$ depends strongly on some other subset of $\boldsymbol \theta$, the RM sampler is often a good choice. However, the differential equations associated with the RM sampler are more expensive to compute than for the fixed metric sampler. Hence, if it is possible to rewrite your model so that the fixed metric sampler gives good results (see e.g. @doi:10.1080/10618600.2019.1584901 or @1812.07929), this approach is often a good choice. 
+
+## Fixed mass sampler {#fixed-mass-sampler}
+
+Suppose the target density is given by $\pi (\boldsymbol \theta)$ and that the model specification admits the evaluation $\bar \pi(\boldsymbol \theta) \propto \pi (\boldsymbol \theta)$. The Hamiltonian $\mathcal H(\mathbf q,\mathbf p)$ used to define the deterministic dynamics for the fixed mass sampler is 
+$$
+\mathcal H(\mathbf q,\mathbf p) = -\log \pi(\mathbf m + \mathbf S \mathbf q) + \frac{1}{2} \mathbf p^T \mathbf p.
+$$
+Here $\mathbf p$ is the (fictitious) momentum variable introduced to construct a dynamical system with Boltzmann-Gibbs distribution $\pi(\mathbf q, \mathbf p) \propto \exp(-\mathcal H(\mathbf q,\mathbf p))$.
+
+Samples are subsequently recorded for $\boldsymbol \theta=\mathbf m + \mathbf S \mathbf q$ which will be distributed according to $\pi(\boldsymbol \theta)$. Here vector $\mathbf m$ and diagonal positive definite matrix $\mathbf S$ are adapted during the warmup process (see Chapter \@ref(scaling-adaptation))
+
+The vector $\mathbf m$ should reflect the mean of the target distribution, and the diagonal elements of $S$ should reflect the scale properties of $\boldsymbol \theta$ under the target distribution.
+
+The reasoning behind introducing the re-parameterization $\mathbf q \leftrightarrow \boldsymbol \theta$ (rather than to account for different scales by introducing a non-identity mass matrix in the kinetic energy term of $\mathcal H(\mathbf q,\mathbf p)$)
+is based on the desire for obtaining well-scaled Hamilton's equations
+$$
+\dot{ \mathbf q}(t) = \mathbf p(t)
+$$
+$$
+\dot{\mathbf p}(t) = \mathbf S \mathbf g(\mathbf m+\mathbf S \mathbf q(t)), \; \mathbf g(\boldsymbol \theta) = \nabla_{\boldsymbol \theta}\log \pi (\boldsymbol \theta)
+$$
+suitable for numerical integration. I.e. for suitably chosen $\mathbf S$ the force term in both equations should have order $1$ (as $Var(\mathbf p)=\mathbf I$ under the Boltzmann-Gibbs distribution). 
+
+The sampler is chosen explicitly by selecting `process.type = "HMCProcess"` in the call to `pdmphmc::build()`, but as mentioned is already the default option.
+
+## Riemann manifold sampler {#Riemann-manifold}
+
+The Riemann manifold (RM) sampler is based on the availability of a "metric tensor" $\mathbf G(\boldsymbol \theta)$. Namely for each $\boldsymbol \theta$, then $\mathbf G(\boldsymbol \theta)$ is a symmetric positive definite matrix that may be interpreted as the "local precision matrix" of the target distribution.
+
+The `amt`-library provides an automatic methodology for computing metric tensors from a given model specification (see @kleppe_amt for details), and by default this methodology is used if the RM sampler is selected via `process.type = "RMHMCProcess"` in the call to `pdmphmc::build()`.
+
+
+The Hamiltonian for the RM sampler is given by
+$$
+\mathcal H(\mathbf q,\mathbf p) = -\log \bar \pi(\mathbf m + \mathbf S \mathbf q) + \frac{1}{2}\log(|\bar{\mathbf G}(\mathbf q)|) + \frac{1}{2}\mathbf p^T[\bar{\mathbf G}(\mathbf q)]^{-1}\mathbf p
+$$
+where
+$$
+\bar{\mathbf G}(\mathbf q) = \mathbf S^T \mathbf G(\mathbf m + \mathbf S \mathbf q) \mathbf S.
+$$
+
+It is seen that the interpretation of $\mathbf m$ and $\mathbf S$ are the same also for the RM sampler, i.e. $\mathbf m$ should reflect the center/mean of the distribution, and $\mathbf S$ should reflect the scale of each element in $\boldsymbol \theta$.
+
+
+### Metric tensor storage
+
+Two storage schemes for the metric tensor are available
+
+- sparse storage using on the `ldl` Cholesky factorization (@davis_ldl)
+
+- dense storage using the Cholesky factorization of the Stan math library.
+
+One should use the sparse storage scheme if the metric tensor is very sparse, which is often the case for hierarchical models. 
+The metric tensor scheme is chosen during the `pdmphmc::build()`-process by selecting `metric.tensor.type = c("Sparse", "Dense")`.
+
+Note that for the sparse storage scheme, the ordering of the parameters may play a role for the performance of the Cholesky factorization (see @davis_sparse). The ordering of the parameters are determined by the ordering of the `PARAMETER_*` statements in the model specification.
+
+### Advanced
+
+It is also possible to specify ones own metric tensor. One turns off the default `amt`-library metric tensor by choosing the option `amt=FALSE` in the call to `pdmphmc::build()`. This process will be documented in more detail soon.
+
+## ODE solvers {#ODE-solvers}
+
+So far, only the order 5 (4) pair of @DORMAND198019 with dense output is used for integrating the differential equations. A PI controller is used for adaptive time step sizes.
+
+## Scaling adaptation {#scaling-adaptation}
+
+So far, only square-roots of estimates of the diagonal elements of $Var(\boldsymbol \theta)$ are available as the diagonal elements of $\mathbf S$. See @kleppe_CTHMC for details
+
+## Event intensity {#event-intensity}
+
+So far, only constant event intensities are available. See @kleppe_CTHMC for details on on the adaptive choice of this constant event intensity.

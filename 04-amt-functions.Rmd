@@ -1,0 +1,118 @@
+# The `amt`-library {#amt-lib}
+
+This section gives an overview of the different probability density/mass functions, in addition to some utility functions available in the `amt`-library. The library provides an automatic
+implementation of the methodology of @kleppe_amt for automatically computing a "metric tensors" suitable Riemannian sampling algorithms for arbitrary models. 
+
+The design of the library allows the user to use the same model specification for both Riemannian and regular fixed metric sampling (see Chapter \@ref(the-samplers)).
+
+The methodology of @kleppe_amt generally requires that all probability densities involved in the model where the argument depends on $\boldsymbol \theta$ (generally the conditional densities of priors and latent variables) to have continuous first order derivatives. To achieve such continuity, many of the below distributions are known probability distributions that have been transformed to have support on the whole real line in such a way that the resulting probability distribution is sufficiently smooth. These transformations are also desirable from a numerical point of view. 
+
+As a basic example of such transformations involves the $ExpGamma$-distribution (see below for proper definition):
+```{cc,eval=FALSE}
+// inside operator()()
+PARAMETER_SCALAR(logSigma,0.0);
+model__+=expGamma_ld(logSigma,1.0,1.0);
+varType sigma=exp(logSigma); 
+model__.generated(asDouble(sigma),"sigma");
+```
+In the above example, `sigma` will be exponentially distributed with mean 1 (until further conditioning is done) and will be recorded as a generated quantity.
+
+## Utilities for symmetric positive definite matrices {#amt-SPD-matrix}
+
+The `amt`-package provides a set of utilities for representing symmetric positive definite (SPD) matrices. Internally, this class template `SPDmatrix` represents a $d \times d$ SPD matrix as an "internal" vector of $d(d+1)/2$ `varTypes`.
+
+`SPDmatrix` objects may be used as e.g. covariance- or precision matrices in multivariate normal distributions, and it also possible to assign e.g. Wishart distributions on such objects (though in practice, such assignments are really distributions on the internal vector, consistent with the matrix-valued distribution).
+
+The easiest way to construct a `SPDmatrix` is via the `PARAMETER_SPD_MATRIX(name,dim,...)` macro. Typical usage involves something like:
+```{cc,eval=FALSE}
+// inside operator()() : 
+PARAMETER_SPD_MATRIX(P,3); 
+// Note: PARAMETER_SPD_MATRIX(P,3) really makes a parameter vector  
+// named P_internal, and subsequently constructs SPDmatrix<varType> P
+Eigen::VectorXd scaleDiag; scaleDiag.setConstant(3,4.0);
+model__ += wishartDiagScale_ld(P,scaleDiag,10.0); 
+// P has a Wishart(4*I,10.0) distribution a priori 
+model__.generated(P,"P"); // full matrix stored
+model__.generated(P.coeff(0,2),"P13"); // single element stored
+```
+
+A complete class where the above code block is the body of the `operator()()`-method is stored in the file `wishart_example.cpp`, which is built an run via:
+```{r,echo=TRUE,eval=eval.examples}
+mdl <- pdmphmc::build("wishart_example.cpp")
+fit <- pdmphmc::run(mdl)
+fit
+```
+
+Notice that by default, the "internal" parameter vector `P_internal` is stored^[This may be avoided by using the `store.pars`-option in `pdmphmc::run()`.] in addition to the generated quantities. Note, in this case, we would expect $E(\mathbf P)=40 \mathbf I$.
+
+## Univariate continuous distributions
+
+### `expGamma_ld(arg,shape,scale)`
+The distribution obtained by applying the (natural) logarithm to a gamma-distributed random variable with shape parameter $\alpha=$`shape` and scale parameter $\beta=$`scale`. Argument of resulting PDF $x=$`arg`. Log-density:
+$$
+\log p(x|\alpha,\beta) = -a\log(b) - \log(\Gamma(a)) + ax - \exp(x)/b.
+$$
+
+
+### `invLogitBeta_ld(x,a,b)`
+The distribution obtained by applying the logit-function to a Beta distributed random variable with shape parameters `a` and `b`. Argument of resulting PDF: $x=$`x`. Log-density:
+$$
+\log p(x|a,b) = \log(\Gamma(a+b)) - \log(\Gamma(a)\Gamma(b)) + a\log\left(\frac{\exp(x)}{1+\exp(x)}\right) - b\log(1+\exp(x)).
+$$
+
+### `invLogitUniform_ld(x)`
+
+The distribution obtained by applying the logit-function to a uniform(0,1); same as the standard logistic distribution. Argument of resulting PDF: $x=$`x`. Log-density:
+$$
+\log p(x) = x - 2\log(1+\exp(x))
+$$
+
+### `normal_ld(arg,mean,sd)`
+
+Normal/Gaussian distribution with mean=`mean` and standard deviation=`sd`. Argument of PDF: $x=$`arg`.
+
+## Univariate discrete distributions 
+
+### `bernoulli_logit_lm(y,alpha)`
+
+Bernoulli-distribution with $P(y=1)=\exp(\alpha)/(1+\exp(\alpha))$. Argument $y$ is of integer type.
+
+### `poisson_log_lm(y,eta)`
+
+Poisson distribution with mean equal to $\exp(\eta)$. Argument $y$ is of integer type.
+
+### `ziPoisson_log_lm(y,eta,g)`
+
+Zero-inflated Poisson distribution. A mixture of point-mass at $y=0$ (with weight $p$) and a regular Poisson distribution with mean $\exp(\eta)$ (with weight $1-p$). $g=\text{logit}(p)$. 
+
+## Distributions on unbounded vectors
+
+### `multi_normal_prec_ld(arg,mu,Prec)`
+
+Multivariate normal distribution where the **precision** matrix `Prec` is a `SPDmatrix` (see Section \@ref(amt-SPD-matrix)). Both the argument `arg` and `mean` are vectors with dimension equal to `Prec.dim()`.
+
+### `iid_multi_normal_prec_ld(arg,mu,Prec)`
+
+Same as above, but `arg` is now a matrix, where the columns are iid realizations from $N(\mu,P^{-1})$, where $P=$`Prec`.
+
+### `multi_normal_ld(arg,mu,Sigma)`
+
+Multivariate normal distribution where the **covariance** matrix `Sigma` is a `SPDmatrix` (see Section \@ref(amt-SPD-matrix)). Both the argument `arg` and `mean` are vectors with dimension equal to `Sigma.dim()`.
+
+To do: iid-variant of this.
+
+### `normalAR1_ld(arg,mu,phi,sigma)`
+
+Stationary Gaussian first order autoregressive process
+
+$$
+x_1 \sim N\left (\mu,\frac{\sigma^2}{1-\phi^2} \right), x_{t} = \mu + \phi ( x_{t-1}-\mu) + N(0,\sigma^2),t=2,\dots,T\;
+$$
+for scalar parameters $\mu$, $-1<\phi<1$ and $\sigma>0$. $\mathbf x=$`arg` is a $T$-dimensional vector.
+
+## Distributions on symmetric positive definite matrices
+
+
+
+
+
