@@ -30,7 +30,10 @@ multi_normal_prec_ldargmuprec
 iid_multi_normal_prec_ldargmuprec
 multi_normal_ldargmusigma
 normalar1_ldargmuphisigma
+normalrw1_ldxsigma
 distributions-on-symmetric-positive-definite-matrices
+wishartdiagscale_ldargscalediagdf
+wishartrw1_ldargmeannu
 the-samplers
 fixed-mass-sampler
 Riemann-manifold

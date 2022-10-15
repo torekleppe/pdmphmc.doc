@@ -921,8 +921,29 @@ x_1 \sim N\left (\mu,\frac{\sigma^2}{1-\phi^2} \right), x_{t} = \mu + \phi ( x_{
 \]
 for scalar parameters \(\mu\), \(-1<\phi<1\) and \(\sigma>0\). \(\mathbf x=\)\texttt{arg} is a \(T\)-dimensional vector.
 
+\hypertarget{normalrw1_ldxsigma}{%
+\subsection{\texorpdfstring{\texttt{normalRW1\_ld(x,sigma)}}{normalRW1\_ld(x,sigma)}}\label{normalrw1_ldxsigma}}
+
+First order (intrinsic) Gaussian random walk model:
+\[
+x_t \sim N(x_{t-1},\sigma^2),\; t=2,\dots,T,
+\]
+for \(\sigma>0\). \(\mathbf x=\)\texttt{x} is a \(T\)-dimensional vector. Note that this model specifies a degenerate probability distribution, and \(\mathbf x\) cannot be sampled without further conditioning.
+
 \hypertarget{distributions-on-symmetric-positive-definite-matrices}{%
 \section{Distributions on symmetric positive definite matrices}\label{distributions-on-symmetric-positive-definite-matrices}}
+
+The notation for the Wishart distribution is \(\mathcal W(\mathbf M,\nu)\) where \(\mathbf M\) is the scale matrix and \(\nu\) is the degrees of freedom parameter. Consequently, if \(\mathbf P \sim \mathcal W(\mathbf M,\nu)\), then \(E(\mathbf P)=\nu \mathbf M\).
+
+\hypertarget{wishartdiagscale_ldargscalediagdf}{%
+\subsection{\texorpdfstring{\texttt{wishartDiagScale\_ld(arg,scaleDiag,df)}}{wishartDiagScale\_ld(arg,scaleDiag,df)}}\label{wishartdiagscale_ldargscalediagdf}}
+
+The Wishart distribution \(\mathbf P \sim \mathcal W(\mathbf M,\nu)\) where \(\mathbf P=\)\texttt{arg} is a \texttt{SPDmatrix}, vector \(\text{diag}(\mathbf M)\)=\texttt{scaleDiag} and scalar \(\nu=\)\texttt{df}.
+
+\hypertarget{wishartrw1_ldargmeannu}{%
+\subsection{\texorpdfstring{\texttt{wishartRW1\_ld(arg,mean,nu)}}{wishartRW1\_ld(arg,mean,nu)}}\label{wishartrw1_ldargmeannu}}
+
+The Wishart distribution \(\mathbf P \sim \mathcal W(\nu^{-1}\mathbf Q,\nu)\). \(\mathbf P=\)\texttt{arg} is a \texttt{SPDmatrix}, \(E(\mathbf P)=\mathbf Q=\)\texttt{mean} is a \texttt{SPDmatrix} and scalar \(\nu=\)\texttt{nu}.
 
 \hypertarget{the-samplers}{%
 \chapter{The sampling algorithms}\label{the-samplers}}

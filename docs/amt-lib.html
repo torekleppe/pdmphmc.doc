@@ -203,8 +203,13 @@ div.csl-indent {
 <li class="chapter" data-level="5.4.2" data-path="amt-lib.html"><a href="amt-lib.html#iid_multi_normal_prec_ldargmuprec"><i class="fa fa-check"></i><b>5.4.2</b> <code>iid_multi_normal_prec_ld(arg,mu,Prec)</code></a></li>
 <li class="chapter" data-level="5.4.3" data-path="amt-lib.html"><a href="amt-lib.html#multi_normal_ldargmusigma"><i class="fa fa-check"></i><b>5.4.3</b> <code>multi_normal_ld(arg,mu,Sigma)</code></a></li>
 <li class="chapter" data-level="5.4.4" data-path="amt-lib.html"><a href="amt-lib.html#normalar1_ldargmuphisigma"><i class="fa fa-check"></i><b>5.4.4</b> <code>normalAR1_ld(arg,mu,phi,sigma)</code></a></li>
+<li class="chapter" data-level="5.4.5" data-path="amt-lib.html"><a href="amt-lib.html#normalrw1_ldxsigma"><i class="fa fa-check"></i><b>5.4.5</b> <code>normalRW1_ld(x,sigma)</code></a></li>
 </ul></li>
-<li class="chapter" data-level="5.5" data-path="amt-lib.html"><a href="amt-lib.html#distributions-on-symmetric-positive-definite-matrices"><i class="fa fa-check"></i><b>5.5</b> Distributions on symmetric positive definite matrices</a></li>
+<li class="chapter" data-level="5.5" data-path="amt-lib.html"><a href="amt-lib.html#distributions-on-symmetric-positive-definite-matrices"><i class="fa fa-check"></i><b>5.5</b> Distributions on symmetric positive definite matrices</a>
+<ul>
+<li class="chapter" data-level="5.5.1" data-path="amt-lib.html"><a href="amt-lib.html#wishartdiagscale_ldargscalediagdf"><i class="fa fa-check"></i><b>5.5.1</b> <code>wishartDiagScale_ld(arg,scaleDiag,df)</code></a></li>
+<li class="chapter" data-level="5.5.2" data-path="amt-lib.html"><a href="amt-lib.html#wishartrw1_ldargmeannu"><i class="fa fa-check"></i><b>5.5.2</b> <code>wishartRW1_ld(arg,mean,nu)</code></a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="the-samplers.html"><a href="the-samplers.html"><i class="fa fa-check"></i><b>6</b> The sampling algorithms</a>
 <ul>
@@ -367,10 +372,27 @@ x_1 \sim N\left (\mu,\frac{\sigma^2}{1-\phi^2} \right), x_{t} = \mu + \phi ( x_{
 \]</span>
 for scalar parameters <span class="math inline">\(\mu\)</span>, <span class="math inline">\(-1&lt;\phi&lt;1\)</span> and <span class="math inline">\(\sigma&gt;0\)</span>. <span class="math inline">\(\mathbf x=\)</span><code>arg</code> is a <span class="math inline">\(T\)</span>-dimensional vector.</p>
 </div>
+<div id="normalrw1_ldxsigma" class="section level3 hasAnchor" number="5.4.5">
+<h3><span class="header-section-number">5.4.5</span> <code>normalRW1_ld(x,sigma)</code><a href="amt-lib.html#normalrw1_ldxsigma" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>First order (intrinsic) Gaussian random walk model:
+<span class="math display">\[
+x_t \sim N(x_{t-1},\sigma^2),\; t=2,\dots,T,
+\]</span>
+for <span class="math inline">\(\sigma&gt;0\)</span>. <span class="math inline">\(\mathbf x=\)</span><code>x</code> is a <span class="math inline">\(T\)</span>-dimensional vector. Note that this model specifies a degenerate probability distribution, and <span class="math inline">\(\mathbf x\)</span> cannot be sampled without further conditioning.</p>
+</div>
 </div>
 <div id="distributions-on-symmetric-positive-definite-matrices" class="section level2 hasAnchor" number="5.5">
 <h2><span class="header-section-number">5.5</span> Distributions on symmetric positive definite matrices<a href="amt-lib.html#distributions-on-symmetric-positive-definite-matrices" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The notation for the Wishart distribution is <span class="math inline">\(\mathcal W(\mathbf M,\nu)\)</span> where <span class="math inline">\(\mathbf M\)</span> is the scale matrix and <span class="math inline">\(\nu\)</span> is the degrees of freedom parameter. Consequently, if <span class="math inline">\(\mathbf P \sim \mathcal W(\mathbf M,\nu)\)</span>, then <span class="math inline">\(E(\mathbf P)=\nu \mathbf M\)</span>.</p>
+<div id="wishartdiagscale_ldargscalediagdf" class="section level3 hasAnchor" number="5.5.1">
+<h3><span class="header-section-number">5.5.1</span> <code>wishartDiagScale_ld(arg,scaleDiag,df)</code><a href="amt-lib.html#wishartdiagscale_ldargscalediagdf" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The Wishart distribution <span class="math inline">\(\mathbf P \sim \mathcal W(\mathbf M,\nu)\)</span> where <span class="math inline">\(\mathbf P=\)</span><code>arg</code> is a <code>SPDmatrix</code>, vector <span class="math inline">\(\text{diag}(\mathbf M)\)</span>=<code>scaleDiag</code> and scalar <span class="math inline">\(\nu=\)</span><code>df</code>.</p>
+</div>
+<div id="wishartrw1_ldargmeannu" class="section level3 hasAnchor" number="5.5.2">
+<h3><span class="header-section-number">5.5.2</span> <code>wishartRW1_ld(arg,mean,nu)</code><a href="amt-lib.html#wishartrw1_ldargmeannu" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The Wishart distribution <span class="math inline">\(\mathbf P \sim \mathcal W(\nu^{-1}\mathbf Q,\nu)\)</span>. <span class="math inline">\(\mathbf P=\)</span><code>arg</code> is a <code>SPDmatrix</code>, <span class="math inline">\(E(\mathbf P)=\mathbf Q=\)</span><code>mean</code> is a <code>SPDmatrix</code> and scalar <span class="math inline">\(\nu=\)</span><code>nu</code>.</p>
 
+</div>
 </div>
 </div>
 <h3>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
