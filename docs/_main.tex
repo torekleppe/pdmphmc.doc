@@ -117,7 +117,7 @@
 
 \title{pdmphmc - numerical generalized randomized HMC processes for \texttt{R}}
 \author{Tore Selland Kleppe}
-\date{2022-10-14}
+\date{2022-10-15}
 
 \begin{document}
 \maketitle
@@ -445,7 +445,7 @@ It should have the signature:
 
 The particular meaning of the templates etc is not important, but the
 user should be aware that all parameters, and all quantities depending
-on parameters should be of type \texttt{varType}\footnote{So far, \texttt{varType} is either of type \texttt{stan::math::var} or \texttt{amt::amtVar} (see header \texttt{include/amtVar.hpp}).}. \texttt{varType}s could be used more
+on parameters should be of type \texttt{varType}\footnote{So far, \texttt{varType} is either of type \texttt{stan::math::var} or \texttt{amt::amtVar} (see header \texttt{include/amt/amtVar.hpp}).}. \texttt{varType}s could be used more
 or less as \texttt{double} types in C++.
 
 Further, the user should be aware of the \texttt{amt::amtModel} object by default named \texttt{model\_\_}\footnote{In principle it could be named something else, but this will break the \texttt{PARAMETER\_*}-macros discussed below. Hence, if the argument to \texttt{operator()} is named something else, the user should provide calls similar to those defined by these macros (see \texttt{include/amt.hpp})}. The \texttt{amt::amtModel} object keeps track of the names and dimensions of the parameters etc, the value of log-target distribution and so on.
@@ -948,7 +948,7 @@ Here \(\mathbf p\) is the (fictitious) momentum variable introduced to construct
 
 Samples are subsequently recorded for \(\boldsymbol \theta=\mathbf m + \mathbf S \mathbf q\) which will be distributed according to \(\pi(\boldsymbol \theta)\). Here vector \(\mathbf m\) and diagonal positive definite matrix \(\mathbf S\) are adapted during the warmup process (see Chapter \ref{scaling-adaptation})
 
-The vector \(\mathbf m\) should reflect the mean of the target distribution, and the diagonal elements of \(S\) should reflect the scale properties of \(\boldsymbol \theta\) under the target distribution.
+The vector \(\mathbf m\) should reflect the mean of the target distribution, and the diagonal elements of \(\mathbf S\) should reflect the scale properties of \(\boldsymbol \theta\) under the target distribution.
 
 The reasoning behind introducing the re-parameterization \(\mathbf q \leftrightarrow \boldsymbol \theta\) (rather than to account for different scales by introducing a non-identity mass matrix in the kinetic energy term of \(\mathcal H(\mathbf q,\mathbf p)\))
 is based on the desire for obtaining well-scaled Hamilton's equations

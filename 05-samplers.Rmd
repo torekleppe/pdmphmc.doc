@@ -23,7 +23,7 @@ Here $\mathbf p$ is the (fictitious) momentum variable introduced to construct a
 
 Samples are subsequently recorded for $\boldsymbol \theta=\mathbf m + \mathbf S \mathbf q$ which will be distributed according to $\pi(\boldsymbol \theta)$. Here vector $\mathbf m$ and diagonal positive definite matrix $\mathbf S$ are adapted during the warmup process (see Chapter \@ref(scaling-adaptation))
 
-The vector $\mathbf m$ should reflect the mean of the target distribution, and the diagonal elements of $S$ should reflect the scale properties of $\boldsymbol \theta$ under the target distribution.
+The vector $\mathbf m$ should reflect the mean of the target distribution, and the diagonal elements of $\mathbf S$ should reflect the scale properties of $\boldsymbol \theta$ under the target distribution.
 
 The reasoning behind introducing the re-parameterization $\mathbf q \leftrightarrow \boldsymbol \theta$ (rather than to account for different scales by introducing a non-identity mass matrix in the kinetic energy term of $\mathcal H(\mathbf q,\mathbf p)$)
 is based on the desire for obtaining well-scaled Hamilton's equations

@@ -64,7 +64,7 @@ template < class varType, class tensorType, bool storeNames>
 ```
 The particular meaning of the templates etc is not important, but the
 user should be aware that all parameters, and all quantities depending
-on parameters should be of type `varType`^[So far, `varType` is either of type `stan::math::var` or `amt::amtVar` (see header `include/amtVar.hpp`).]. `varType`s could be used more
+on parameters should be of type `varType`^[So far, `varType` is either of type `stan::math::var` or `amt::amtVar` (see header `include/amt/amtVar.hpp`).]. `varType`s could be used more
 or less as `double` types in C++.
 
 Further, the user should be aware of the `amt::amtModel` object by default named `model__`^[In principle it could be named something else, but this will break the `PARAMETER_*`-macros discussed below. Hence, if the argument to `operator()` is named something else, the user should provide calls similar to those defined by these macros (see `include/amt.hpp`)]. The `amt::amtModel` object keeps track of the names and dimensions of the parameters etc, the value of log-target distribution and so on.

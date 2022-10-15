@@ -23,7 +23,7 @@
 <meta name="author" content="Tore Selland Kleppe" />
 
 
-<meta name="date" content="2022-10-14" />
+<meta name="date" content="2022-10-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -252,7 +252,7 @@ div.csl-indent {
 \]</span>
 Here <span class="math inline">\(\mathbf p\)</span> is the (fictitious) momentum variable introduced to construct a dynamical system with Boltzmann-Gibbs distribution <span class="math inline">\(\pi(\mathbf q, \mathbf p) \propto \exp(-\mathcal H(\mathbf q,\mathbf p))\)</span>.</p>
 <p>Samples are subsequently recorded for <span class="math inline">\(\boldsymbol \theta=\mathbf m + \mathbf S \mathbf q\)</span> which will be distributed according to <span class="math inline">\(\pi(\boldsymbol \theta)\)</span>. Here vector <span class="math inline">\(\mathbf m\)</span> and diagonal positive definite matrix <span class="math inline">\(\mathbf S\)</span> are adapted during the warmup process (see Chapter <a href="the-samplers.html#scaling-adaptation">6.4</a>)</p>
-<p>The vector <span class="math inline">\(\mathbf m\)</span> should reflect the mean of the target distribution, and the diagonal elements of <span class="math inline">\(S\)</span> should reflect the scale properties of <span class="math inline">\(\boldsymbol \theta\)</span> under the target distribution.</p>
+<p>The vector <span class="math inline">\(\mathbf m\)</span> should reflect the mean of the target distribution, and the diagonal elements of <span class="math inline">\(\mathbf S\)</span> should reflect the scale properties of <span class="math inline">\(\boldsymbol \theta\)</span> under the target distribution.</p>
 <p>The reasoning behind introducing the re-parameterization <span class="math inline">\(\mathbf q \leftrightarrow \boldsymbol \theta\)</span> (rather than to account for different scales by introducing a non-identity mass matrix in the kinetic energy term of <span class="math inline">\(\mathcal H(\mathbf q,\mathbf p)\)</span>)
 is based on the desire for obtaining well-scaled Hamilton’s equations
 <span class="math display">\[
