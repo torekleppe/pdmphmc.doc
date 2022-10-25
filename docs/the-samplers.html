@@ -23,7 +23,7 @@
 <meta name="author" content="Tore Selland Kleppe" />
 
 
-<meta name="date" content="2022-10-15" />
+<meta name="date" content="2022-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -244,7 +244,7 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="the-samplers" class="section level1 hasAnchor" number="6">
 <h1><span class="header-section-number">Chapter 6</span> The sampling algorithms<a href="the-samplers.html#the-samplers" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>As the name of the package indicates, the samplers in employed in this package are based on piecewise deterministic Markov processes (see e.g. <span class="citation">Fearnhead et al. (<a href="#ref-fearnhead2018" role="doc-biblioref">2018</a>)</span>) with Hamiltonian dynamic between events (see <span class="citation">Kleppe (<a href="#ref-kleppe_CTHMC" role="doc-biblioref">2022b</a>)</span>).</p>
+<p>As the name of the package indicates, the samplers in employed in this package are based on piecewise deterministic Markov processes (see e.g. <span class="citation">Fearnhead et al. (<a href="#ref-fearnhead2018" role="doc-biblioref">2018</a>)</span>) with Hamiltonian dynamic between events (see <span class="citation">Kleppe (<a href="#ref-kleppe_CTHMC" role="doc-biblioref">2022a</a>)</span>).</p>
 <p>Two distinct such samplers are so far implemented: fixed mass (section <a href="the-samplers.html#fixed-mass-sampler">6.1</a>) and Riemannian manifold (Section <a href="the-samplers.html#Riemann-manifold">6.2</a>). The Hamiltonians, which are fully specifies the between event dynamics are provided below.</p>
 <p>The same set of numerical differential equation solvers (Section <a href="the-samplers.html#ODE-solvers">6.3</a>) are used for both solvers. Finally, methods for adapting the scaling of the differential equations (Section <a href="the-samplers.html#scaling-adaptation">6.4</a>) and the different available event intensities (Section <a href="the-samplers.html#event-intensity">6.5</a>) are described below.</p>
 <p>The sampling algorithm to be used are chosen prior to the compilation <code>pdmphmc::build()</code>. By default, a fixed mass sampler is used.</p>
@@ -272,7 +272,7 @@ suitable for numerical integration. I.e. for suitably chosen <span class="math i
 <div id="Riemann-manifold" class="section level2 hasAnchor" number="6.2">
 <h2><span class="header-section-number">6.2</span> Riemann manifold sampler<a href="the-samplers.html#Riemann-manifold" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The Riemann manifold (RM) sampler is based on the availability of a “metric tensor” <span class="math inline">\(\mathbf G(\boldsymbol \theta)\)</span>. Namely for each <span class="math inline">\(\boldsymbol \theta\)</span>, then <span class="math inline">\(\mathbf G(\boldsymbol \theta)\)</span> is a symmetric positive definite matrix that may be interpreted as the “local precision matrix” of the target distribution.</p>
-<p>The <code>amt</code>-library provides an automatic methodology for computing metric tensors from a given model specification (see <span class="citation">Kleppe (<a href="#ref-kleppe_amt" role="doc-biblioref">2022a</a>)</span> for details), and by default this methodology is used if the RM sampler is selected via <code>process.type = "RMHMCProcess"</code> in the call to <code>pdmphmc::build()</code>.</p>
+<p>The <code>amt</code>-library provides an automatic methodology for computing metric tensors from a given model specification (see <span class="citation">Kleppe (<a href="#ref-kleppe_amt" role="doc-biblioref">2022b</a>)</span> for details), and by default this methodology is used if the RM sampler is selected via <code>process.type = "RMHMCProcess"</code> in the call to <code>pdmphmc::build()</code>.</p>
 <p>The Hamiltonian for the RM sampler is given by
 <span class="math display">\[
 \mathcal H(\mathbf q,\mathbf p) = -\log \bar \pi(\mathbf m + \mathbf S \mathbf q) + \frac{1}{2}\log(|\bar{\mathbf G}(\mathbf q)|) + \frac{1}{2}\mathbf p^T[\bar{\mathbf G}(\mathbf q)]^{-1}\mathbf p
@@ -304,11 +304,11 @@ The metric tensor scheme is chosen during the <code>pdmphmc::build()</code>-proc
 </div>
 <div id="scaling-adaptation" class="section level2 hasAnchor" number="6.4">
 <h2><span class="header-section-number">6.4</span> Scaling adaptation<a href="the-samplers.html#scaling-adaptation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>So far, only square-roots of estimates of the diagonal elements of <span class="math inline">\(Var(\boldsymbol \theta)\)</span> are available as the diagonal elements of <span class="math inline">\(\mathbf S\)</span>. See <span class="citation">Kleppe (<a href="#ref-kleppe_CTHMC" role="doc-biblioref">2022b</a>)</span> for details</p>
+<p>So far, only square-roots of estimates of the diagonal elements of <span class="math inline">\(Var(\boldsymbol \theta)\)</span> are available as the diagonal elements of <span class="math inline">\(\mathbf S\)</span>. See <span class="citation">Kleppe (<a href="#ref-kleppe_CTHMC" role="doc-biblioref">2022a</a>)</span> for details</p>
 </div>
 <div id="event-intensity" class="section level2 hasAnchor" number="6.5">
 <h2><span class="header-section-number">6.5</span> Event intensity<a href="the-samplers.html#event-intensity" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>So far, only constant event intensities are available. See <span class="citation">Kleppe (<a href="#ref-kleppe_CTHMC" role="doc-biblioref">2022b</a>)</span> for details on on the adaptive choice of this constant event intensity.</p>
+<p>So far, only constant event intensities are available. See <span class="citation">Kleppe (<a href="#ref-kleppe_CTHMC" role="doc-biblioref">2022a</a>)</span> for details on on the adaptive choice of this constant event intensity.</p>
 
 </div>
 </div>
@@ -329,11 +329,11 @@ Fearnhead, Paul, Joris Bierkens, Murray Pollock, and Gareth O. Roberts. 2018. <s
 <div id="ref-doi:10.1080/10618600.2019.1584901" class="csl-entry">
 Kleppe, Tore Selland. 2019. <span>“Dynamically Rescaled <span>H</span>amiltonian <span>M</span>onte <span>C</span>arlo for <span>B</span>ayesian Hierarchical Models.”</span> <em>Journal of Computational and Graphical Statistics</em> 28 (3): 493–507. <a href="https://doi.org/10.1080/10618600.2019.1584901">https://doi.org/10.1080/10618600.2019.1584901</a>.
 </div>
-<div id="ref-kleppe_amt" class="csl-entry">
-———. 2022a. <span>“Automatic Metric Tensors Based on Log-Gradient Covariance for Riemannian MCMC.”</span>
-</div>
 <div id="ref-kleppe_CTHMC" class="csl-entry">
-———. 2022b. <span>“Connecting the Dots: Numerical Randomized <span>H</span>amiltonian <span>M</span>onte <span>C</span>arlo with State-Dependent Event Rates.”</span> <em>Journal of Computational and Graphical Statistics</em>.
+———. 2022a. <span>“Connecting the Dots: Numerical Randomized <span>H</span>amiltonian <span>M</span>onte <span>C</span>arlo with State-Dependent Event Rates.”</span> <em>Journal of Computational and Graphical Statistics</em>.
+</div>
+<div id="ref-kleppe_amt" class="csl-entry">
+———. 2022b. <span>“Log-Density Gradient Covariance and Automatic Metric Tensors for Riemann Manifold Monte Carlo Methods.”</span>
 </div>
 <div id="ref-1812.07929" class="csl-entry">
 Osmundsen, Kjartan Kloster, Tore Selland Kleppe, and Roman Liesenfeld. 2021. <span>“Importance Sampling-Based Transport Map <span>H</span>amiltonian <span>M</span>onte <span>C</span>arlo for <span>B</span>ayesian Hierarchical Models.”</span> <em>Journal of Computational and Graphical Statistics</em> 30 (4): 906–19.

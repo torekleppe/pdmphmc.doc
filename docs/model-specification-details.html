@@ -23,7 +23,7 @@
 <meta name="author" content="Tore Selland Kleppe" />
 
 
-<meta name="date" content="2022-10-15" />
+<meta name="date" content="2022-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -367,7 +367,7 @@ log-densities with names ending with <code>_ld</code> or <code>_lm</code> are av
 <p>Generated quantities are used in two ways:</p>
 <ul>
 <li><p>It is often the case that one is interested in the posterior distribution of some auxiliary quantities which depend on the parameter <span class="math inline">\(\boldsymbol \theta\)</span>.</p></li>
-<li><p>The <code>pdmphmc</code> package has the capability to compute “time-integrated” samples (see e.g. <span class="citation">Kleppe (<a href="#ref-kleppe_CTHMC" role="doc-biblioref">2022b</a>)</span>, Equation 7 and Figure 3), which in certain cases may be much more efficient for estimating certain moments. Time integrated samples are computed for all generated quantities (and not the parameters, so if you want time-integrated samples of the parameters, pass them as generated quantities).</p></li>
+<li><p>The <code>pdmphmc</code> package has the capability to compute “time-integrated” samples (see e.g. <span class="citation">Kleppe (<a href="#ref-kleppe_CTHMC" role="doc-biblioref">2022a</a>)</span>, Equation 7 and Figure 3), which in certain cases may be much more efficient for estimating certain moments. Time integrated samples are computed for all generated quantities (and not the parameters, so if you want time-integrated samples of the parameters, pass them as generated quantities).</p></li>
 </ul>
 <p>To record such quantities, the <code>generated()</code> function (member of <code>amt::amtModel</code>) is used. There are several overloads of <code>generated()</code> allowing several types (scalars, vectors, matrices etc.) to be passed.</p>
 <p>The <code>generated()</code> functions have signatures similar to
@@ -447,7 +447,7 @@ log-densities with names ending with <code>_ld</code> or <code>_lm</code> are av
 <h3>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-kleppe_CTHMC" class="csl-entry">
-———. 2022b. <span>“Connecting the Dots: Numerical Randomized <span>H</span>amiltonian <span>M</span>onte <span>C</span>arlo with State-Dependent Event Rates.”</span> <em>Journal of Computational and Graphical Statistics</em>.
+———. 2022a. <span>“Connecting the Dots: Numerical Randomized <span>H</span>amiltonian <span>M</span>onte <span>C</span>arlo with State-Dependent Event Rates.”</span> <em>Journal of Computational and Graphical Statistics</em>.
 </div>
 </div>
 <div class="footnotes">

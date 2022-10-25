@@ -23,7 +23,7 @@
 <meta name="author" content="Tore Selland Kleppe" />
 
 
-<meta name="date" content="2022-10-15" />
+<meta name="date" content="2022-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -245,9 +245,9 @@ div.csl-indent {
 <div id="amt-lib" class="section level1 hasAnchor" number="5">
 <h1><span class="header-section-number">Chapter 5</span> The <code>amt</code>-library<a href="amt-lib.html#amt-lib" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>This section gives an overview of the different probability density/mass functions, in addition to some utility functions available in the <code>amt</code>-library. The library provides an automatic
-implementation of the methodology of <span class="citation">Kleppe (<a href="#ref-kleppe_amt" role="doc-biblioref">2022a</a>)</span> for automatically computing a “metric tensors” suitable Riemannian sampling algorithms for arbitrary models.</p>
+implementation of the methodology of <span class="citation">Kleppe (<a href="#ref-kleppe_amt" role="doc-biblioref">2022b</a>)</span> for automatically computing a “metric tensors” suitable Riemannian sampling algorithms for arbitrary models.</p>
 <p>The design of the library allows the user to use the same model specification for both Riemannian and regular fixed metric sampling (see Chapter <a href="the-samplers.html#the-samplers">6</a>).</p>
-<p>The methodology of <span class="citation">Kleppe (<a href="#ref-kleppe_amt" role="doc-biblioref">2022a</a>)</span> generally requires that all probability densities involved in the model where the argument depends on <span class="math inline">\(\boldsymbol \theta\)</span> (generally the conditional densities of priors and latent variables) to have continuous first order derivatives. To achieve such continuity, many of the below distributions are known probability distributions that have been transformed to have support on the whole real line in such a way that the resulting probability distribution is sufficiently smooth. These transformations are also desirable from a numerical point of view.</p>
+<p>The methodology of <span class="citation">Kleppe (<a href="#ref-kleppe_amt" role="doc-biblioref">2022b</a>)</span> generally requires that all probability densities involved in the model where the argument depends on <span class="math inline">\(\boldsymbol \theta\)</span> (generally the conditional densities of priors and latent variables) to have continuous first order derivatives. To achieve such continuity, many of the below distributions are known probability distributions that have been transformed to have support on the whole real line in such a way that the resulting probability distribution is sufficiently smooth. These transformations are also desirable from a numerical point of view.</p>
 <p>As a basic example of such transformations involves the <span class="math inline">\(ExpGamma\)</span>-distribution (see below for proper definition):</p>
 <div class="sourceCode" id="cb49"><pre class="sourceCode cc"><code class="sourceCode cpp"><span id="cb49-1"><a href="amt-lib.html#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co">// inside operator()()</span></span>
 <span id="cb49-2"><a href="amt-lib.html#cb49-2" aria-hidden="true" tabindex="-1"></a>PARAMETER_SCALAR<span class="op">(</span>logSigma<span class="op">,</span><span class="fl">0.0</span><span class="op">);</span></span>
@@ -398,7 +398,7 @@ for <span class="math inline">\(\sigma&gt;0\)</span>. <span class="math inline">
 <h3>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-kleppe_amt" class="csl-entry">
-———. 2022a. <span>“Automatic Metric Tensors Based on Log-Gradient Covariance for Riemannian MCMC.”</span>
+———. 2022b. <span>“Log-Density Gradient Covariance and Automatic Metric Tensors for Riemann Manifold Monte Carlo Methods.”</span>
 </div>
 </div>
 <div class="footnotes">
