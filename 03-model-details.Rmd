@@ -213,6 +213,7 @@ Then build and run the model:
 ```{r,echo=TRUE,eval=eval.examples}
 model <- pdmphmc::build("generated_model.cpp")
 fit <- pdmphmc::run(model)
+pdmphmc::clean.model(model,remove.all = TRUE)
 fit
 ```
 

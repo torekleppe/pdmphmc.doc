@@ -407,7 +407,9 @@ log-densities with names ending with <code>_ld</code> or <code>_lm</code> are av
 <pre><code>## metric tensor type : metricTensorDummy</code></pre>
 <pre><code>## compilation exited successfully</code></pre>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="model-specification-details.html#cb41-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(model)</span>
-<span id="cb41-2"><a href="model-specification-details.html#cb41-2" aria-hidden="true" tabindex="-1"></a>fit</span></code></pre></div>
+<span id="cb41-2"><a href="model-specification-details.html#cb41-2" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">clean.model</span>(model,<span class="at">remove.all =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="model-specification-details.html#cb43-1" aria-hidden="true" tabindex="-1"></a>fit</span></code></pre></div>
 <pre><code>## run output for model: model</code></pre>
 <pre><code>## # of chains : 4</code></pre>
 <pre><code>## Summary based on discrete samples:</code></pre>

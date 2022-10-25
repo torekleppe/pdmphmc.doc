@@ -40,6 +40,7 @@ A complete class where the above code block is the body of the `operator()()`-me
 ```{r,echo=TRUE,eval=eval.examples}
 mdl <- pdmphmc::build("wishart_example.cpp")
 fit <- pdmphmc::run(mdl)
+pdmphmc::clean.model(mdl,remove.all = TRUE)
 fit
 ```
 
