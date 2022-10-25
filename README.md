@@ -1,5 +1,7 @@
 Welcome! 
 
+**If you are interested in reading the documentation, and not the source files, go to [https://torekleppe.github.io/pdmphmc.doc/] **
+
 This document provides documentation of the `pdmphmc`(piecewise deterministic Markov process HMC) R package. 
 
 The package is available on github (https://github.com/torekleppe/pdmphmc) and is most easily installed via the R-command `devtools::install_github("https://github.com/torekleppe/pdmphmc")`
