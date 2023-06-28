@@ -117,7 +117,7 @@
 
 \title{pdmphmc - numerical generalized randomized HMC processes for \texttt{R}}
 \author{Tore Selland Kleppe}
-\date{2022-10-25}
+\date{2023-06-28}
 
 \begin{document}
 \maketitle
@@ -150,7 +150,7 @@ The package implements, with some modifications and substantial additions, the m
 \hypertarget{why-pdmphmc}{%
 \section{\texorpdfstring{Why \texttt{pdmphmc}?}{Why pdmphmc?}}\label{why-pdmphmc}}
 
-Many packages provides computational methods for Bayesian statistical models. \texttt{pdmphmc} is designed to be \emph{computationally fast and stable, even for high-dimensional models and/or models where the posterior distribution exhibits complicated non-linear dependence structures}. Particular emphasis has been on developing and implementing methodology suitable for fitting non-linear hierarchical models.
+Many packages provides computational methods for Bayesian statistical models. \texttt{pdmphmc} is designed to be \emph{computationally fast and stable, even for high-dimensional models and/or models where the posterior distribution exhibits complicated non-linear dependence structures}. Particular emphasis has been on developing and implementing methodology suitable for fitting non-linear hierarchical models, and also models involving hard constraints/restricted domains.
 
 \hypertarget{prerequisites}{%
 \section{Prerequisites}\label{prerequisites}}
@@ -198,11 +198,15 @@ The simplest way to check your installation is to try to run the \texttt{testSys
 \end{verbatim}
 
 \begin{verbatim}
-## process type : HMCProcess
+## process type : HMCProcessConstr
 \end{verbatim}
 
 \begin{verbatim}
-## metric tensor type : metricTensorDummy
+## Runge Kutta step type : RKDP54
+\end{verbatim}
+
+\begin{verbatim}
+## Transport map type : diagLinearTM_VARI
 \end{verbatim}
 
 \begin{verbatim}
@@ -287,11 +291,15 @@ When stored in file \texttt{basic\_model.cpp}, the above model specification may
 \end{verbatim}
 
 \begin{verbatim}
-## process type : HMCProcess
+## process type : HMCProcessConstr
 \end{verbatim}
 
 \begin{verbatim}
-## metric tensor type : metricTensorDummy
+## Runge Kutta step type : RKDP54
+\end{verbatim}
+
+\begin{verbatim}
+## Transport map type : diagLinearTM_VARI
 \end{verbatim}
 
 \begin{verbatim}
@@ -330,9 +338,9 @@ Finally, get a summary of the sampled- and generated quantities, based on \textt
 
 \begin{verbatim}
 ##         mean se_mean    sd n_eff  Rhat
-## mu     0.076   0.006 0.342  2920 1.000
-## lambda 0.028   0.010 0.514  2757 1.001
-## sigma  1.049   0.006 0.291  2760 1.001
+## mu     0.074   0.006 0.340  2939 1.001
+## lambda 0.027   0.010 0.518  2791 1.002
+## sigma  1.050   0.006 0.298  2784 1.003
 \end{verbatim}
 
 \begin{verbatim}
@@ -341,7 +349,7 @@ Finally, get a summary of the sampled- and generated quantities, based on \textt
 
 \begin{verbatim}
 ##    estimate se_estimate n_eff  Rhat
-## V1    1.048       0.004  1773 1.001
+## V1    1.049       0.004  1823 1.002
 \end{verbatim}
 
 \begin{verbatim}
@@ -636,11 +644,15 @@ Then build and run the model:
 \end{verbatim}
 
 \begin{verbatim}
-## process type : HMCProcess
+## process type : HMCProcessConstr
 \end{verbatim}
 
 \begin{verbatim}
-## metric tensor type : metricTensorDummy
+## Runge Kutta step type : RKDP54
+\end{verbatim}
+
+\begin{verbatim}
+## Transport map type : diagLinearTM_VARI
 \end{verbatim}
 
 \begin{verbatim}
@@ -678,17 +690,17 @@ Then build and run the model:
 
 \begin{verbatim}
 ##                 mean se_mean    sd n_eff  Rhat
-## x[1]          -0.017   0.017 0.973  3391 1.003
-## x[2]           0.007   0.017 1.037  3546 1.004
-## x[3]           0.006   0.017 1.024  3736 1.000
-## x[4]           0.006   0.017 0.977  3329 1.002
-## x_gen[1]      -0.017   0.017 0.973  3391 1.003
-## x_gen[2]       0.007   0.017 1.037  3546 1.004
-## x_gen[3]       0.006   0.017 1.024  3736 1.000
-## x_gen[4]       0.006   0.017 0.977  3329 1.002
-## x1_cube       -0.032   0.058 3.627  3849 1.003
-## x2_exp         1.719   0.039 2.305  3440 1.003
-## quadraticNorm  4.026   0.068 2.846  1720 1.001
+## x[1]          -0.004   0.017 0.969  3405 1.004
+## x[2]          -0.005   0.017 1.035  3559 1.003
+## x[3]           0.002   0.017 1.021  3760 1.000
+## x[4]           0.000   0.017 0.972  3425 1.002
+## x_gen[1]      -0.004   0.017 0.969  3405 1.004
+## x_gen[2]      -0.005   0.017 1.035  3559 1.003
+## x_gen[3]       0.002   0.017 1.021  3760 1.000
+## x_gen[4]       0.000   0.017 0.972  3425 1.002
+## x1_cube        0.009   0.059 3.624  3796 1.004
+## x2_exp         1.695   0.039 2.312  3536 1.001
+## quadraticNorm  3.996   0.070 2.805  1610 1.002
 \end{verbatim}
 
 \begin{verbatim}
@@ -697,13 +709,13 @@ Then build and run the model:
 
 \begin{verbatim}
 ##               estimate se_estimate n_eff  Rhat
-## x_gen[1]         0.005       0.005  5963 1.005
-## x_gen[2]         0.003       0.005  5811 1.002
-## x_gen[3]         0.004       0.005  6267 1.000
-## x_gen[4]        -0.003       0.005  5968 0.999
-## x1_cube          0.008       0.018  6574 1.006
-## x2_exp           1.718       0.038   989 1.003
-## quadraticNorm    4.043       0.067   838 1.003
+## x_gen[1]         0.005       0.005  5983 1.004
+## x_gen[2]         0.003       0.005  5747 1.002
+## x_gen[3]         0.004       0.005  6363 1.002
+## x_gen[4]        -0.002       0.005  5884 1.000
+## x1_cube          0.010       0.018  5937 1.008
+## x2_exp           1.707       0.038   944 1.004
+## quadraticNorm    4.019       0.068   825 1.003
 \end{verbatim}
 
 \begin{verbatim}
@@ -722,6 +734,11 @@ Some minor comments related to performance are in order here:
 \item
   In models where \(\boldsymbol \theta\) is high-dimensional and parts of \(\boldsymbol \theta\) are of less interest, the default behavior of storing samples of all of \(\boldsymbol \theta\) may be overridden by using the \texttt{store.pars} argument in \texttt{pdmphmc::run()}. Reducing the number of stored quantities leads to both memory savings and savings in terms of computing time.
 \end{itemize}
+
+\hypertarget{constraints}{%
+\chapter{Constraints}\label{constraints}}
+
+To be described in detail soon.
 
 \hypertarget{amt-lib}{%
 \chapter{\texorpdfstring{The \texttt{amt}-library}{The amt-library}}\label{amt-lib}}
@@ -783,11 +800,15 @@ A complete class where the above code block is the body of the \texttt{operator(
 \end{verbatim}
 
 \begin{verbatim}
-## process type : HMCProcess
+## process type : HMCProcessConstr
 \end{verbatim}
 
 \begin{verbatim}
-## metric tensor type : metricTensorDummy
+## Runge Kutta step type : RKDP54
+\end{verbatim}
+
+\begin{verbatim}
+## Transport map type : diagLinearTM_VARI
 \end{verbatim}
 
 \begin{verbatim}
@@ -825,19 +846,19 @@ A complete class where the above code block is the body of the \texttt{operator(
 
 \begin{verbatim}
 ##                 mean se_mean     sd n_eff  Rhat
-## P_internal[1]  3.570   0.010  0.491  2369 1.002
-## P_internal[2]  3.468   0.010  0.492  2455 1.004
-## P_internal[3]  3.330   0.010  0.542  3228 1.001
-## P_internal[4]  0.000   0.007  0.366  3128 1.002
-## P_internal[5] -0.008   0.007  0.362  2862 1.001
-## P_internal[6]  0.008   0.007  0.377  2577 1.002
-## P[1,1]        39.708   0.370 18.407  2467 1.002
-## P[2,1]         0.134   0.229 12.988  3225 1.002
-## P[3,1]        -0.025   0.241 12.947  2874 1.000
-## P[2,2]        40.107   0.347 17.647  2581 1.003
-## P[3,2]         0.284   0.248 12.982  2726 1.003
-## P[3,3]        40.197   0.305 18.000  3479 1.002
-## P13           -0.025   0.241 12.947  2874 1.000
+## P_internal[1]  3.581   0.010  0.488  2510 1.004
+## P_internal[2]  3.468   0.010  0.496  2434 1.003
+## P_internal[3]  3.327   0.010  0.547  3142 1.002
+## P_internal[4] -0.002   0.007  0.369  3186 1.002
+## P_internal[5] -0.015   0.007  0.363  3108 1.002
+## P_internal[6]  0.006   0.008  0.376  2486 1.001
+## P[1,1]        40.116   0.363 18.498  2591 1.003
+## P[2,1]         0.070   0.235 13.368  3240 1.001
+## P[3,1]        -0.438   0.230 12.823  3110 1.001
+## P[2,2]        40.328   0.352 17.892  2585 1.006
+## P[3,2]         0.358   0.248 12.767  2657 1.001
+## P[3,3]        40.056   0.310 18.198  3437 1.001
+## P13           -0.438   0.230 12.823  3110 1.001
 \end{verbatim}
 
 \begin{verbatim}
@@ -846,13 +867,13 @@ A complete class where the above code block is the body of the \texttt{operator(
 
 \begin{verbatim}
 ##        estimate se_estimate n_eff  Rhat
-## P[1,1]   39.707       0.184  1838 1.005
-## P[2,1]    0.028       0.056  7138 1.034
-## P[3,1]    0.053       0.053  6941 1.029
-## P[2,2]   40.200       0.182  1768 1.001
-## P[3,2]    0.144       0.101  2184 1.002
-## P[3,3]   40.235       0.163  2335 1.001
-## P13       0.053       0.053  6941 1.029
+## P[1,1]   39.693       0.193  1653 1.006
+## P[2,1]    0.013       0.054  7358 1.040
+## P[3,1]    0.043       0.054  6789 1.034
+## P[2,2]   40.261       0.181  1778 1.005
+## P[3,2]    0.158       0.111  1852 1.003
+## P[3,3]   40.214       0.166  2184 1.002
+## P13       0.043       0.054  6789 1.034
 \end{verbatim}
 
 \begin{verbatim}

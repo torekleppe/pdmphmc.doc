@@ -1,8 +1,4 @@
 
-```{r, echo=FALSE}
-eval.examples=FALSE #TRUE
-```
-
 # `pdmphmc` "Hello World"
 
 **This section assumes that `pdmphmc` R-package has already been installed.**

@@ -14,6 +14,7 @@ the-operator-function
 the-parameter_-macros
 specifying-the-shape-of-piboldsymbol-theta.
 generated-quantities
+constraints
 amt-lib
 amt-SPD-matrix
 univariate-continuous-distributions
@@ -43,6 +44,3 @@ ODE-solvers
 scaling-adaptation
 event-intensity
 worked-examples
-dsfsdf
-url-your-book-url-like-httpsbookdown.orgyihuibookdown
-constraints
