@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>pdmphmc - numerical generalized randomized HMC processes for R</title>
+  <title>Chapter 5 Constraints | pdmphmc - numerical generalized randomized HMC processes for R</title>
   <meta name="description" content="Description in index.Rmd" />
   <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="pdmphmc - numerical generalized randomized HMC processes for R" />
+  <meta property="og:title" content="Chapter 5 Constraints | pdmphmc - numerical generalized randomized HMC processes for R" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Description in index.Rmd" />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="pdmphmc - numerical generalized randomized HMC processes for R" />
+  <meta name="twitter:title" content="Chapter 5 Constraints | pdmphmc - numerical generalized randomized HMC processes for R" />
   
   <meta name="twitter:description" content="Description in index.Rmd" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="pdmphmc-hello-world.html"/>
+<link rel="prev" href="model-specification-details.html"/>
+<link rel="next" href="amt-lib.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -123,28 +123,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 </style>
-<style type="text/css">
-/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-}
-.hanging div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}
-</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -159,7 +137,7 @@ div.csl-indent {
       <nav role="navigation">
 
 <ul class="summary">
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> About</a>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> url: your book url like https://bookdown.org/yihui/bookdown</a>
 <ul>
 <li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#what-is-pdmphmc"><i class="fa fa-check"></i><b>1.1</b> What is <code>pdmphmc</code>?</a></li>
 <li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#why-pdmphmc"><i class="fa fa-check"></i><b>1.2</b> Why <code>pdmphmc</code>?</a></li>
@@ -185,7 +163,7 @@ div.csl-indent {
 <li class="chapter" data-level="4.3.3" data-path="model-specification-details.html"><a href="model-specification-details.html#generated-quantities"><i class="fa fa-check"></i><b>4.3.3</b> Generated quantities</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="dsfsdf.html"><a href="dsfsdf.html"><i class="fa fa-check"></i><b>5</b> dsfsdf</a></li>
+<li class="chapter" data-level="5" data-path="constraints.html"><a href="constraints.html"><i class="fa fa-check"></i><b>5</b> Constraints</a></li>
 <li class="chapter" data-level="6" data-path="amt-lib.html"><a href="amt-lib.html"><i class="fa fa-check"></i><b>6</b> The <code>amt</code>-library</a>
 <ul>
 <li class="chapter" data-level="6.1" data-path="amt-lib.html"><a href="amt-lib.html#amt-SPD-matrix"><i class="fa fa-check"></i><b>6.1</b> Utilities for symmetric positive definite matrices</a></li>
@@ -247,54 +225,18 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">pdmphmc - numerical generalized randomized HMC processes for <code>R</code></h1>
-<p class="author"><em>Tore Selland Kleppe</em></p>
-<p class="date"><em>2023-06-28</em></p>
-</div>
-<div id="about" class="section level1 hasAnchor" number="1">
-<h1><span class="header-section-number">Chapter 1</span> About<a href="index.html#about" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>This document provides documentation of the <code>pdmphmc</code>(piecewise deterministic Markov process HMC) package.</p>
-<p>The package is available on github and is most easily installed via <code>devtools::install_github("https://github.com/torekleppe/pdmphmc")</code> (requires the <code>devtools</code> package)</p>
-<p>The package implements, with some modifications and substantial additions, the methodology of <span class="citation">Kleppe (<a href="#ref-kleppe_CTHMC" role="doc-biblioref">2022a</a>)</span>, <span class="citation">Kleppe (<a href="#ref-kleppe_amt" role="doc-biblioref">2022b</a>)</span>.</p>
-<div id="what-is-pdmphmc" class="section level2 hasAnchor" number="1.1">
-<h2><span class="header-section-number">1.1</span> What is <code>pdmphmc</code>?<a href="index.html#what-is-pdmphmc" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p><code>pdmphmc</code> is a system for carrying out probability computations, typically associated with Bayesian statistical modelling. <code>pdmphmc</code> consist of</p>
-<ul>
-<li><p>A very flexible system for specifying Bayesian statistical models using C++ classes.</p></li>
-<li><p>An implementation of numerical generalized randomized Hamiltonian Monte Carlo samplers for MCMC-like computations for models specified in the above mentioned system.</p></li>
-</ul>
-</div>
-<div id="why-pdmphmc" class="section level2 hasAnchor" number="1.2">
-<h2><span class="header-section-number">1.2</span> Why <code>pdmphmc</code>?<a href="index.html#why-pdmphmc" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Many packages provides computational methods for Bayesian statistical models. <code>pdmphmc</code> is designed to be <em>computationally fast and stable, even for high-dimensional models and/or models where the posterior distribution exhibits complicated non-linear dependence structures</em>. Particular emphasis has been on developing and implementing methodology suitable for fitting non-linear hierarchical models, and also models involving hard constraints/restricted domains.</p>
-</div>
-<div id="prerequisites" class="section level2 hasAnchor" number="1.3">
-<h2><span class="header-section-number">1.3</span> Prerequisites<a href="index.html#prerequisites" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<ul>
-<li><p>This documentation assumes basic familiarity with the C++ programming language.</p></li>
-<li><p>This documentation assumes modest familiarity with the Eigen C++ library, see e.g. <a href="https://eigen.tuxfamily.org/dox/group__QuickRefPage.html" class="uri">https://eigen.tuxfamily.org/dox/group__QuickRefPage.html</a></p></li>
-<li><p>The package relies on the Stan Math Library (<a href="https://mc-stan.org/users/interfaces/math" class="uri">https://mc-stan.org/users/interfaces/math</a>) for automatic differentiation. In addition, the complete Stan Math Library (including all probability density functions etc) are also available within the modeling facilities of this package. Hence, some familiarity with the probability densities etc documented in <a href="https://mc-stan.org/docs/functions-reference/index.html" class="uri">https://mc-stan.org/docs/functions-reference/index.html</a> may be useful.</p></li>
-</ul>
+<div id="constraints" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">Chapter 5</span> Constraints<a href="constraints.html#constraints" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>To be described in detail soon.</p>
 
-</div>
-</div>
-<h3>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-kleppe_CTHMC" class="csl-entry">
-Kleppe, Tore Selland. 2022a. <span>“Connecting the Dots: Numerical Randomized <span>H</span>amiltonian <span>M</span>onte <span>C</span>arlo with State-Dependent Event Rates.”</span> <em>Journal of Computational and Graphical Statistics</em>.
-</div>
-<div id="ref-kleppe_amt" class="csl-entry">
-———. 2022b. <span>“Log-Density Gradient Covariance and Automatic Metric Tensors for Riemann Manifold Monte Carlo Methods.”</span>
-</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="pdmphmc-hello-world.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="model-specification-details.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="amt-lib.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

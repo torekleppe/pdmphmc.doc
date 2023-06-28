@@ -1,6 +1,6 @@
 
 ```{r, echo=FALSE}
-eval.examples=TRUE
+eval.examples=FALSE #TRUE
 ```
 
 # `pdmphmc` "Hello World"

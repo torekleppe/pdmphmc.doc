@@ -12,6 +12,10 @@ description: |
 link-citations: yes
 ---
 
+```{r, echo=FALSE}
+eval.examples=FALSE #TRUE
+```
+
 # About
 
 This document provides documentation of the `pdmphmc`(piecewise deterministic Markov process HMC) package. 
@@ -31,7 +35,7 @@ The package implements, with some modifications and substantial additions, the m
 
 ## Why `pdmphmc`?
 
-Many packages provides computational methods for Bayesian statistical models. `pdmphmc` is designed to be *computationally fast and stable, even for high-dimensional models and/or models where the posterior distribution exhibits complicated non-linear dependence structures*. Particular emphasis has been on developing and implementing methodology suitable for fitting non-linear hierarchical models.
+Many packages provides computational methods for Bayesian statistical models. `pdmphmc` is designed to be *computationally fast and stable, even for high-dimensional models and/or models where the posterior distribution exhibits complicated non-linear dependence structures*. Particular emphasis has been on developing and implementing methodology suitable for fitting non-linear hierarchical models, and also models involving hard constraints/restricted domains. 
 
 ## Prerequisites
 
