@@ -23,7 +23,7 @@
 <meta name="author" content="Tore Selland Kleppe" />
 
 
-<meta name="date" content="2023-06-28" />
+<meta name="date" content="2023-07-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -185,7 +185,28 @@ div.csl-indent {
 <li class="chapter" data-level="4.3.3" data-path="model-specification-details.html"><a href="model-specification-details.html#generated-quantities"><i class="fa fa-check"></i><b>4.3.3</b> Generated quantities</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="constraints.html"><a href="constraints.html"><i class="fa fa-check"></i><b>5</b> Constraints</a></li>
+<li class="chapter" data-level="5" data-path="constraints.html"><a href="constraints.html"><i class="fa fa-check"></i><b>5</b> Constraints</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="constraints.html"><a href="constraints.html#specifying-constraints"><i class="fa fa-check"></i><b>5.1</b> Specifying constraints</a></li>
+<li class="chapter" data-level="5.2" data-path="constraints.html"><a href="constraints.html#special-constraints"><i class="fa fa-check"></i><b>5.2</b> Special constraints</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="constraints.html"><a href="constraints.html#dense-linear-constraints"><i class="fa fa-check"></i><b>5.2.1</b> Dense Linear constraints</a></li>
+<li class="chapter" data-level="5.2.2" data-path="constraints.html"><a href="constraints.html#sparse-linear-constraints"><i class="fa fa-check"></i><b>5.2.2</b> Sparse Linear constraints</a></li>
+<li class="chapter" data-level="5.2.3" data-path="constraints.html"><a href="constraints.html#sparse-linear-l1-constraints"><i class="fa fa-check"></i><b>5.2.3</b> Sparse Linear <span class="math inline">\(L^1\)</span> constraints</a></li>
+<li class="chapter" data-level="5.2.4" data-path="constraints.html"><a href="constraints.html#sparse-linear-l2-constraints"><i class="fa fa-check"></i><b>5.2.4</b> Sparse Linear <span class="math inline">\(L^2\)</span> constraints</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="constraints.html"><a href="constraints.html#non-linear-constraints"><i class="fa fa-check"></i><b>5.3</b> Non-linear constraints</a>
+<ul>
+<li class="chapter" data-level="5.3.1" data-path="constraints.html"><a href="constraints.html#constraint-functor-details"><i class="fa fa-check"></i><b>5.3.1</b> Details of the constraint functor</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="constraints.html"><a href="constraints.html#worked-example"><i class="fa fa-check"></i><b>5.4</b> Worked example</a>
+<ul>
+<li class="chapter" data-level="5.4.1" data-path="constraints.html"><a href="constraints.html#linear-constraints-dense-and-sparse"><i class="fa fa-check"></i><b>5.4.1</b> Linear constraints (dense and sparse)</a></li>
+<li class="chapter" data-level="5.4.2" data-path="constraints.html"><a href="constraints.html#l1-constraint"><i class="fa fa-check"></i><b>5.4.2</b> <span class="math inline">\(L^1\)</span> constraint</a></li>
+<li class="chapter" data-level="5.4.3" data-path="constraints.html"><a href="constraints.html#l2-constraint"><i class="fa fa-check"></i><b>5.4.3</b> <span class="math inline">\(L^2\)</span> constraint</a></li>
+<li class="chapter" data-level="5.4.4" data-path="constraints.html"><a href="constraints.html#general-nonlinear-constraint"><i class="fa fa-check"></i><b>5.4.4</b> General nonlinear constraint</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="amt-lib.html"><a href="amt-lib.html"><i class="fa fa-check"></i><b>6</b> The <code>amt</code>-library</a>
 <ul>
 <li class="chapter" data-level="6.1" data-path="amt-lib.html"><a href="amt-lib.html#amt-SPD-matrix"><i class="fa fa-check"></i><b>6.1</b> Utilities for symmetric positive definite matrices</a></li>
@@ -249,8 +270,240 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="constraints" class="section level1 hasAnchor" number="5">
 <h1><span class="header-section-number">Chapter 5</span> Constraints<a href="constraints.html#constraints" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>To be described in detail soon.</p>
+<p>In a recent update of <code>pdmphmc</code>, constraints are included as a part of the model specification.</p>
+<p>The parameters of the model may be specified to be constrained to on a specific domain, i.e. so that sampling is performed with stationary distribution being
+<span class="math display">\[
+\propto \pi(\boldsymbol \theta) \; \text{such that}\; c_1(\boldsymbol \theta)&gt;0,\dots,c_B(\boldsymbol \theta)&gt;0
+\]</span>
+where <span class="math inline">\(c_b(\boldsymbol \theta),\;b=1,\dots,B\)</span> are scalar constraint functions.</p>
+<p>Further details regarding the numerical details may be found in a paper which will be published very soon.</p>
+<p><strong>Constraints are so far only available for the fixed mass sampler, and requires that the <code>RKBS32</code> integrator is used (see Section <a href="the-samplers.html#ODE-solvers">7.3</a>, obtained using <code>step.type = "RKBS32"</code> in <code>build()</code>) </strong>.</p>
+<div id="specifying-constraints" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Specifying constraints<a href="constraints.html#specifying-constraints" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>There are several different types of constraints, all of which are specified by member-functions
+of the <code>amt::amtModel</code> class (see examples below).</p>
+<p>In many cases, a given constraint may be specified in multiple ways, and in general, always using the non-linear constraint specification described at the end of this subsection. However, <em>if the constraint in question has some special structure, this may be exploited in the numerical implementation to obtain faster sampling</em>, and should therefore be used. Below, first the different such special structures are described, before general non-linear constraints are discussed.</p>
+</div>
+<div id="special-constraints" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> Special constraints<a href="constraints.html#special-constraints" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The following special constraints are available:</p>
+<div id="dense-linear-constraints" class="section level3 hasAnchor" number="5.2.1">
+<h3><span class="header-section-number">5.2.1</span> Dense Linear constraints<a href="constraints.html#dense-linear-constraints" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>may be written as
+<span class="math display">\[
+\mathbf a^T \boldsymbol \theta - b&gt;0
+\]</span>
+where <span class="math inline">\(\mathbf a\)</span> is a constant (i.e. not depending on <span class="math inline">\(\boldsymbol \theta\)</span>) vector and <span class="math inline">\(b\)</span> is a constant scalar. Specified using <code>linConstraint()</code>. The user is only responsible for providing code for <span class="math inline">\(\mathbf a^T \boldsymbol \theta - b\)</span>. E.g.</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode cc"><code class="sourceCode cpp"><span id="cb54-1"><a href="constraints.html#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="kw">template</span> <span class="op">&lt;</span> <span class="kw">class</span> varType<span class="op">,</span> <span class="kw">class</span> tensorType<span class="op">,</span> <span class="dt">bool</span> storeNames<span class="op">&gt;</span></span>
+<span id="cb54-2"><a href="constraints.html#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> <span class="kw">operator</span><span class="op">()(</span>amt<span class="op">::</span>amtModel<span class="op">&lt;</span>varType<span class="op">,</span>tensorType<span class="op">,</span>storeNames<span class="op">&gt;</span> <span class="op">&amp;</span>model__<span class="op">){</span></span>
+<span id="cb54-3"><a href="constraints.html#cb54-3" aria-hidden="true" tabindex="-1"></a>    PARAMETER_VECTOR<span class="op">(</span>theta<span class="op">,</span><span class="dv">2</span><span class="op">);</span> <span class="co">// parameter (sampled quantity)</span></span>
+<span id="cb54-4"><a href="constraints.html#cb54-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* ... */</span></span>
+<span id="cb54-5"><a href="constraints.html#cb54-5" aria-hidden="true" tabindex="-1"></a>    varType s <span class="op">=</span> <span class="fl">0.5</span><span class="op">*</span>theta<span class="op">(</span><span class="dv">0</span><span class="op">)-</span><span class="fl">2.0</span><span class="op">+</span>theta<span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="co">// should be positive</span></span>
+<span id="cb54-6"><a href="constraints.html#cb54-6" aria-hidden="true" tabindex="-1"></a>    model__<span class="op">.</span>linConstraint<span class="op">(</span>s<span class="op">);</span> <span class="co">// specify the constraint</span></span>
+<span id="cb54-7"><a href="constraints.html#cb54-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span></code></pre></div>
+<p>ensures that sampling only occur for values of <span class="math inline">\(\boldsymbol \theta\)</span> so that <span class="math inline">\(s=\theta_1 /2 + \theta_2-2&gt;0\)</span>.</p>
+</div>
+<div id="sparse-linear-constraints" class="section level3 hasAnchor" number="5.2.2">
+<h3><span class="header-section-number">5.2.2</span> Sparse Linear constraints<a href="constraints.html#sparse-linear-constraints" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>are essentially the same as dense linear constraints, but where <span class="math inline">\(\mathbf a\)</span> is assumed to contain many zeros. Specified using <code>sparseLinConstraint()</code>.</p>
+</div>
+<div id="sparse-linear-l1-constraints" class="section level3 hasAnchor" number="5.2.3">
+<h3><span class="header-section-number">5.2.3</span> Sparse Linear <span class="math inline">\(L^1\)</span> constraints<a href="constraints.html#sparse-linear-l1-constraints" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>may be expressed as
+<span class="math display">\[
+\parallel \mathbf A \boldsymbol \theta - \mathbf b \parallel_1 &lt; c
+\]</span>
+for constant matrix <span class="math inline">\(\mathbf A\)</span>, constant vector <span class="math inline">\(b\)</span> and constant scalar <span class="math inline">\(c\)</span>. Specified using <code>sparseLinL1Constraint()</code> The user is only responsible for code evaluating <span class="math inline">\(\mathbf A \boldsymbol \theta - \mathbf b\)</span> and <span class="math inline">\(c\)</span>. E.g.</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode cc"><code class="sourceCode cpp"><span id="cb55-1"><a href="constraints.html#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="kw">template</span> <span class="op">&lt;</span> <span class="kw">class</span> varType<span class="op">,</span> <span class="kw">class</span> tensorType<span class="op">,</span> <span class="dt">bool</span> storeNames<span class="op">&gt;</span></span>
+<span id="cb55-2"><a href="constraints.html#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> <span class="kw">operator</span><span class="op">()(</span>amt<span class="op">::</span>amtModel<span class="op">&lt;</span>varType<span class="op">,</span>tensorType<span class="op">,</span>storeNames<span class="op">&gt;</span> <span class="op">&amp;</span>model__<span class="op">){</span></span>
+<span id="cb55-3"><a href="constraints.html#cb55-3" aria-hidden="true" tabindex="-1"></a>    PARAMETER_VECTOR<span class="op">(</span>theta<span class="op">,</span><span class="dv">2</span><span class="op">);</span> <span class="co">// parameter (sampled quantity)</span></span>
+<span id="cb55-4"><a href="constraints.html#cb55-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* ... */</span></span>
+<span id="cb55-5"><a href="constraints.html#cb55-5" aria-hidden="true" tabindex="-1"></a>    VectorXv t<span class="op">(</span><span class="dv">3</span><span class="op">);</span> <span class="co">// should have L1-norm less than 2.0</span></span>
+<span id="cb55-6"><a href="constraints.html#cb55-6" aria-hidden="true" tabindex="-1"></a>    t<span class="op">(</span><span class="dv">0</span><span class="op">)</span> <span class="op">=</span> theta<span class="op">(</span><span class="dv">0</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1.0</span><span class="op">;</span> </span>
+<span id="cb55-7"><a href="constraints.html#cb55-7" aria-hidden="true" tabindex="-1"></a>    t<span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">=</span> theta<span class="op">(</span><span class="dv">1</span><span class="op">)-</span>theta<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb55-8"><a href="constraints.html#cb55-8" aria-hidden="true" tabindex="-1"></a>    t<span class="op">(</span><span class="dv">2</span><span class="op">)</span> <span class="op">=</span> theta<span class="op">(</span><span class="dv">0</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1.0</span><span class="op">;</span></span>
+<span id="cb55-9"><a href="constraints.html#cb55-9" aria-hidden="true" tabindex="-1"></a>    model__<span class="op">.</span>sparseLinL1Constraint<span class="op">(</span>t<span class="op">,</span><span class="fl">2.0</span><span class="op">);</span> <span class="co">// specify the constraint</span></span>
+<span id="cb55-10"><a href="constraints.html#cb55-10" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span></code></pre></div>
+<p>It is assumed that matrix <span class="math inline">\(\mathbf A\)</span> is a sparse matrix.</p>
+</div>
+<div id="sparse-linear-l2-constraints" class="section level3 hasAnchor" number="5.2.4">
+<h3><span class="header-section-number">5.2.4</span> Sparse Linear <span class="math inline">\(L^2\)</span> constraints<a href="constraints.html#sparse-linear-l2-constraints" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Similar as above, but for <span class="math inline">\(L^2\)</span> norm, i.e. 
+<span class="math display">\[
+\parallel \mathbf A \boldsymbol \theta - \mathbf b \parallel_2 &lt; c.
+\]</span>
+Specified using <code>sparseLinL2Constraint()</code>.</p>
+</div>
+</div>
+<div id="non-linear-constraints" class="section level2 hasAnchor" number="5.3">
+<h2><span class="header-section-number">5.3</span> Non-linear constraints<a href="constraints.html#non-linear-constraints" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Suppose the the constraint may be written as
+<span class="math display">\[
+F(\mathbf A \boldsymbol \theta - \mathbf b)&gt;0
+\]</span>
+for some non-linear function <span class="math inline">\(F:\mathbb R^p \mapsto \mathbb R\)</span>, a constant matrix <span class="math inline">\(\mathbf A\)</span> with <span class="math inline">\(p\)</span> rows and a constant vector <span class="math inline">\(\mathbf b \in \mathbb R^p\)</span>. Further, it is assumed that the gradient of <span class="math inline">\(F\)</span> may be computed, either analytically or at least be found efficiently using automatic differentiation.</p>
+<p>Note that <span class="math inline">\(A\)</span> may in principle be the identity matrix, but it is often the case that <span class="math inline">\(p\)</span> is much smaller than the dimension of <span class="math inline">\(\theta\)</span>. Such constraints should be specified via a functor class and the <code>sparseLinFunConstraint()</code>-function.</p>
+<p>Technical details regarding the constraint functor are found below in Section <a href="constraints.html#constraint-functor-details">5.3.1</a>. First, a working example of the functor representing <span class="math inline">\(F(\mathbf z)=1-\frac{1}{2}\mathbf z^T \mathbf z\)</span> is considered. The functor should both include code evaluating <span class="math inline">\(F\)</span> itself and also <span class="math inline">\(F\)</span> and the gradient of <span class="math inline">\(F\)</span>:</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode cc"><code class="sourceCode cpp"><span id="cb56-1"><a href="constraints.html#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> L2fun <span class="op">:</span> <span class="kw">public</span> constraintFunctor <span class="op">{</span></span>
+<span id="cb56-2"><a href="constraints.html#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span><span class="op">:</span></span>
+<span id="cb56-3"><a href="constraints.html#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">// evaluates F only</span></span>
+<span id="cb56-4"><a href="constraints.html#cb56-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">inline</span> <span class="dt">double</span> <span class="kw">operator</span><span class="op">()(</span><span class="at">const</span> Eigen<span class="op">::</span>VectorXd<span class="op">&amp;</span> arg<span class="op">)</span> <span class="at">const</span> <span class="op">{</span></span>
+<span id="cb56-5"><a href="constraints.html#cb56-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span><span class="op">(</span><span class="fl">1.0</span><span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>arg<span class="op">.</span>squaredNorm<span class="op">());</span> </span>
+<span id="cb56-6"><a href="constraints.html#cb56-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb56-7"><a href="constraints.html#cb56-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">// evaluates F and the gradient of F stored in grad</span></span>
+<span id="cb56-8"><a href="constraints.html#cb56-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">inline</span> <span class="dt">double</span> <span class="kw">operator</span><span class="op">()(</span><span class="at">const</span> Eigen<span class="op">::</span>VectorXd<span class="op">&amp;</span> arg<span class="op">,</span></span>
+<span id="cb56-9"><a href="constraints.html#cb56-9" aria-hidden="true" tabindex="-1"></a>                         Eigen<span class="op">::</span>VectorXd<span class="op">&amp;</span> grad<span class="op">)</span> <span class="at">const</span> <span class="op">{</span></span>
+<span id="cb56-10"><a href="constraints.html#cb56-10" aria-hidden="true" tabindex="-1"></a>    grad <span class="op">=</span> <span class="op">-</span>arg<span class="op">;</span> <span class="co">// gradient of F</span></span>
+<span id="cb56-11"><a href="constraints.html#cb56-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span><span class="op">(</span><span class="kw">operator</span><span class="op">()(</span>arg<span class="op">));</span> <span class="co">// return value of F itself</span></span>
+<span id="cb56-12"><a href="constraints.html#cb56-12" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb56-13"><a href="constraints.html#cb56-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">// arbitrary name</span></span>
+<span id="cb56-14"><a href="constraints.html#cb56-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">inline</span> <span class="bu">std::</span>string<span class="op"> </span>name<span class="op">()</span> <span class="at">const</span> <span class="op">{</span><span class="cf">return</span> <span class="st">&quot;L2fun__&quot;</span><span class="op">;}</span></span>
+<span id="cb56-15"><a href="constraints.html#cb56-15" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+<p>Further, the model specification should include an instance of the functor, and a
+call to the model-member function <code>sparseLinFunConstraint()</code>, e.g.</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode cc"><code class="sourceCode cpp"><span id="cb57-1"><a href="constraints.html#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="kw">using</span> <span class="kw">namespace</span> amt<span class="op">;</span></span>
+<span id="cb57-2"><a href="constraints.html#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> model<span class="op">{</span></span>
+<span id="cb57-3"><a href="constraints.html#cb57-3" aria-hidden="true" tabindex="-1"></a>  L2fun functor<span class="op">;</span></span>
+<span id="cb57-4"><a href="constraints.html#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* ... */</span></span>
+<span id="cb57-5"><a href="constraints.html#cb57-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">template</span> <span class="op">&lt;</span> <span class="kw">class</span> varType<span class="op">,</span> <span class="kw">class</span> tensorType<span class="op">,</span> <span class="dt">bool</span> storeNames<span class="op">&gt;</span></span>
+<span id="cb57-6"><a href="constraints.html#cb57-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> <span class="kw">operator</span><span class="op">()(</span>amt<span class="op">::</span>amtModel<span class="op">&lt;</span>varType<span class="op">,</span>tensorType<span class="op">,</span>storeNames<span class="op">&gt;</span> <span class="op">&amp;</span>model__<span class="op">){</span></span>
+<span id="cb57-7"><a href="constraints.html#cb57-7" aria-hidden="true" tabindex="-1"></a>    PARAMETER_VECTOR<span class="op">(</span>x<span class="op">,</span><span class="dv">5</span><span class="op">);</span></span>
+<span id="cb57-8"><a href="constraints.html#cb57-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb57-9"><a href="constraints.html#cb57-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* model etc... */</span></span>
+<span id="cb57-10"><a href="constraints.html#cb57-10" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb57-11"><a href="constraints.html#cb57-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">// ensures that 0.5*sqrt(sum(x[0:2]^2))&lt;1.0</span></span>
+<span id="cb57-12"><a href="constraints.html#cb57-12" aria-hidden="true" tabindex="-1"></a>    model__<span class="op">.</span>sparseLinFunConstraint<span class="op">(</span>x<span class="op">.</span>head<span class="op">(</span><span class="dv">3</span><span class="op">),</span>functor<span class="op">);</span> </span>
+<span id="cb57-13"><a href="constraints.html#cb57-13" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb57-14"><a href="constraints.html#cb57-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div id="constraint-functor-details" class="section level3 hasAnchor" number="5.3.1">
+<h3><span class="header-section-number">5.3.1</span> Details of the constraint functor<a href="constraints.html#constraint-functor-details" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The functor representing <span class="math inline">\(F\)</span> <strong>must</strong> inherit virtual base class</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode cc"><code class="sourceCode cpp"><span id="cb58-1"><a href="constraints.html#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> constraintFunctor<span class="op">{</span></span>
+<span id="cb58-2"><a href="constraints.html#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span><span class="op">:</span></span>
+<span id="cb58-3"><a href="constraints.html#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">virtual</span> <span class="dt">double</span> <span class="kw">operator</span><span class="op">()(</span><span class="at">const</span> Eigen<span class="op">::</span>VectorXd<span class="op">&amp;</span> arg<span class="op">)</span> <span class="at">const</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb58-4"><a href="constraints.html#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">virtual</span> <span class="dt">double</span> <span class="kw">operator</span><span class="op">()(</span><span class="at">const</span> Eigen<span class="op">::</span>VectorXd<span class="op">&amp;</span> arg<span class="op">,</span></span>
+<span id="cb58-5"><a href="constraints.html#cb58-5" aria-hidden="true" tabindex="-1"></a>                          Eigen<span class="op">::</span>VectorXd<span class="op">&amp;</span> grad<span class="op">)</span> <span class="at">const</span>  <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb58-6"><a href="constraints.html#cb58-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">virtual</span> <span class="kw">inline</span> <span class="bu">std::</span>string<span class="op"> </span>name<span class="op">()</span> <span class="at">const</span> <span class="op">{</span><span class="cf">return</span> <span class="st">&quot;unnamed constraint functor&quot;</span><span class="op">;}</span></span>
+<span id="cb58-7"><a href="constraints.html#cb58-7" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+<p>Additional member functions/non-trivial constructors may be added as necessary.</p>
+<p>The <code>pdmphmc</code> package comes with a simple forward mode automatic differentiation library <code>FMVAD</code> which may be used to calculate the required gradient if the gradient is complicated to code. The library is yet to be documented.</p>
+</div>
+</div>
+<div id="worked-example" class="section level2 hasAnchor" number="5.4">
+<h2><span class="header-section-number">5.4</span> Worked example<a href="constraints.html#worked-example" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The following code is contained in file <code>constraint_model.cpp</code> :</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode cc"><code class="sourceCode cpp"><span id="cb59-1"><a href="constraints.html#cb59-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-2"><a href="constraints.html#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> nonLinFun <span class="op">:</span> <span class="kw">public</span> constraintFunctor <span class="op">{</span></span>
+<span id="cb59-3"><a href="constraints.html#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span><span class="op">:</span></span>
+<span id="cb59-4"><a href="constraints.html#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">// evaluates F only</span></span>
+<span id="cb59-5"><a href="constraints.html#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">inline</span> <span class="dt">double</span> <span class="kw">operator</span><span class="op">()(</span><span class="at">const</span> Eigen<span class="op">::</span>VectorXd<span class="op">&amp;</span> arg<span class="op">)</span> <span class="at">const</span> <span class="op">{</span></span>
+<span id="cb59-6"><a href="constraints.html#cb59-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span><span class="op">(</span><span class="fl">1.0</span> <span class="op">-</span> arg<span class="op">(</span><span class="dv">0</span><span class="op">)*</span>arg<span class="op">(</span><span class="dv">1</span><span class="op">));</span> </span>
+<span id="cb59-7"><a href="constraints.html#cb59-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb59-8"><a href="constraints.html#cb59-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">// evaluates F and the gradient of F stored in grad</span></span>
+<span id="cb59-9"><a href="constraints.html#cb59-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">inline</span> <span class="dt">double</span> <span class="kw">operator</span><span class="op">()(</span><span class="at">const</span> Eigen<span class="op">::</span>VectorXd<span class="op">&amp;</span> arg<span class="op">,</span></span>
+<span id="cb59-10"><a href="constraints.html#cb59-10" aria-hidden="true" tabindex="-1"></a>                         Eigen<span class="op">::</span>VectorXd<span class="op">&amp;</span> grad<span class="op">)</span> <span class="at">const</span> <span class="op">{</span></span>
+<span id="cb59-11"><a href="constraints.html#cb59-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>grad<span class="op">.</span>size<span class="op">()!=</span>arg<span class="op">.</span>size<span class="op">())</span> grad<span class="op">.</span>resize<span class="op">(</span>arg<span class="op">.</span>size<span class="op">());</span></span>
+<span id="cb59-12"><a href="constraints.html#cb59-12" aria-hidden="true" tabindex="-1"></a>    grad<span class="op">.</span>setZero<span class="op">();</span></span>
+<span id="cb59-13"><a href="constraints.html#cb59-13" aria-hidden="true" tabindex="-1"></a>    grad<span class="op">(</span><span class="dv">0</span><span class="op">)</span> <span class="op">=</span> <span class="op">-</span>arg<span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb59-14"><a href="constraints.html#cb59-14" aria-hidden="true" tabindex="-1"></a>    grad<span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">=</span> <span class="op">-</span>arg<span class="op">(</span><span class="dv">0</span><span class="op">);</span> <span class="co">// gradient of F</span></span>
+<span id="cb59-15"><a href="constraints.html#cb59-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span><span class="op">(</span><span class="kw">operator</span><span class="op">()(</span>arg<span class="op">));</span> <span class="co">// return value of F itself</span></span>
+<span id="cb59-16"><a href="constraints.html#cb59-16" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb59-17"><a href="constraints.html#cb59-17" aria-hidden="true" tabindex="-1"></a>  <span class="co">// arbitrary name</span></span>
+<span id="cb59-18"><a href="constraints.html#cb59-18" aria-hidden="true" tabindex="-1"></a>  <span class="kw">inline</span> <span class="bu">std::</span>string<span class="op"> </span>name<span class="op">()</span> <span class="at">const</span> <span class="op">{</span><span class="cf">return</span> <span class="st">&quot;some_constraint_functor&quot;</span><span class="op">;}</span></span>
+<span id="cb59-19"><a href="constraints.html#cb59-19" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb59-20"><a href="constraints.html#cb59-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-21"><a href="constraints.html#cb59-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-22"><a href="constraints.html#cb59-22" aria-hidden="true" tabindex="-1"></a><span class="kw">using</span> <span class="kw">namespace</span> amt<span class="op">;</span></span>
+<span id="cb59-23"><a href="constraints.html#cb59-23" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> model<span class="op">{</span></span>
+<span id="cb59-24"><a href="constraints.html#cb59-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-25"><a href="constraints.html#cb59-25" aria-hidden="true" tabindex="-1"></a>  nonLinFun <span class="va">functor_</span><span class="op">;</span></span>
+<span id="cb59-26"><a href="constraints.html#cb59-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-27"><a href="constraints.html#cb59-27" aria-hidden="true" tabindex="-1"></a>  DATA_INT<span class="op">(</span>constrType<span class="op">);</span> <span class="co">// which constraint type to use, passed from R</span></span>
+<span id="cb59-28"><a href="constraints.html#cb59-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-29"><a href="constraints.html#cb59-29" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> preProcess<span class="op">(){}</span> <span class="co">// not used in this example </span></span>
+<span id="cb59-30"><a href="constraints.html#cb59-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-31"><a href="constraints.html#cb59-31" aria-hidden="true" tabindex="-1"></a>  <span class="kw">template</span> <span class="op">&lt;</span> <span class="kw">class</span> varType<span class="op">,</span> <span class="kw">class</span> tensorType<span class="op">,</span> <span class="dt">bool</span> storeNames<span class="op">&gt;</span></span>
+<span id="cb59-32"><a href="constraints.html#cb59-32" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> <span class="kw">operator</span><span class="op">()(</span>amt<span class="op">::</span>amtModel<span class="op">&lt;</span>varType<span class="op">,</span>tensorType<span class="op">,</span>storeNames<span class="op">&gt;</span> <span class="op">&amp;</span>model__<span class="op">){</span></span>
+<span id="cb59-33"><a href="constraints.html#cb59-33" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb59-34"><a href="constraints.html#cb59-34" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb59-35"><a href="constraints.html#cb59-35" aria-hidden="true" tabindex="-1"></a>    PARAMETER_VECTOR<span class="op">(</span>x<span class="op">,</span><span class="dv">2</span><span class="op">);</span> <span class="co">// parameter (sampled quantity)</span></span>
+<span id="cb59-36"><a href="constraints.html#cb59-36" aria-hidden="true" tabindex="-1"></a>    <span class="co">// x is bivariate normally distributed with correlation rho</span></span>
+<span id="cb59-37"><a href="constraints.html#cb59-37" aria-hidden="true" tabindex="-1"></a>    <span class="co">// before any constraints are imposed</span></span>
+<span id="cb59-38"><a href="constraints.html#cb59-38" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> rho <span class="op">=</span> <span class="fl">0.7</span><span class="op">;</span></span>
+<span id="cb59-39"><a href="constraints.html#cb59-39" aria-hidden="true" tabindex="-1"></a>    model__<span class="op">+=</span>normal_ld<span class="op">(</span>x<span class="op">(</span><span class="dv">0</span><span class="op">),</span><span class="fl">0.0</span><span class="op">,</span><span class="fl">1.0</span><span class="op">);</span></span>
+<span id="cb59-40"><a href="constraints.html#cb59-40" aria-hidden="true" tabindex="-1"></a>    model__<span class="op">+=</span>normal_ld<span class="op">(</span>x<span class="op">(</span><span class="dv">1</span><span class="op">),</span>rho<span class="op">*</span>x<span class="op">(</span><span class="dv">0</span><span class="op">),</span>sqrt<span class="op">(</span><span class="fl">1.0</span><span class="op">-</span>rho<span class="op">*</span>rho<span class="op">));</span></span>
+<span id="cb59-41"><a href="constraints.html#cb59-41" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb59-42"><a href="constraints.html#cb59-42" aria-hidden="true" tabindex="-1"></a>    <span class="co">// now add the different constraints</span></span>
+<span id="cb59-43"><a href="constraints.html#cb59-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>constrType<span class="op">==</span><span class="dv">1</span><span class="op">){</span></span>
+<span id="cb59-44"><a href="constraints.html#cb59-44" aria-hidden="true" tabindex="-1"></a>      model__<span class="op">.</span>linConstraint<span class="op">(</span><span class="fl">1.0</span><span class="op">-</span>x<span class="op">(</span><span class="dv">0</span><span class="op">)-</span>x<span class="op">(</span><span class="dv">1</span><span class="op">));</span></span>
+<span id="cb59-45"><a href="constraints.html#cb59-45" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span><span class="op">(</span>constrType<span class="op">==</span><span class="dv">2</span><span class="op">){</span></span>
+<span id="cb59-46"><a href="constraints.html#cb59-46" aria-hidden="true" tabindex="-1"></a>      model__<span class="op">.</span>sparseLinConstraint<span class="op">(</span><span class="fl">1.0</span><span class="op">-</span>x<span class="op">(</span><span class="dv">0</span><span class="op">)-</span>x<span class="op">(</span><span class="dv">1</span><span class="op">));</span></span>
+<span id="cb59-47"><a href="constraints.html#cb59-47" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span><span class="op">(</span>constrType<span class="op">==</span><span class="dv">3</span><span class="op">){</span></span>
+<span id="cb59-48"><a href="constraints.html#cb59-48" aria-hidden="true" tabindex="-1"></a>      VectorXv z <span class="op">=</span> x<span class="op">;</span></span>
+<span id="cb59-49"><a href="constraints.html#cb59-49" aria-hidden="true" tabindex="-1"></a>      z<span class="op">(</span><span class="dv">0</span><span class="op">)-=</span><span class="fl">0.5</span><span class="op">;</span></span>
+<span id="cb59-50"><a href="constraints.html#cb59-50" aria-hidden="true" tabindex="-1"></a>      z<span class="op">(</span><span class="dv">1</span><span class="op">)-=</span><span class="fl">0.25</span><span class="op">;</span></span>
+<span id="cb59-51"><a href="constraints.html#cb59-51" aria-hidden="true" tabindex="-1"></a>      model__<span class="op">.</span>sparseLinL1Constraint<span class="op">(</span>z<span class="op">,</span><span class="fl">2.0</span><span class="op">);</span></span>
+<span id="cb59-52"><a href="constraints.html#cb59-52" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span><span class="op">(</span>constrType<span class="op">==</span><span class="dv">4</span><span class="op">){</span></span>
+<span id="cb59-53"><a href="constraints.html#cb59-53" aria-hidden="true" tabindex="-1"></a>      VectorXv z<span class="op">(</span>x<span class="op">.</span>size<span class="op">());</span></span>
+<span id="cb59-54"><a href="constraints.html#cb59-54" aria-hidden="true" tabindex="-1"></a>      z<span class="op">(</span><span class="dv">0</span><span class="op">)</span> <span class="op">=</span> x<span class="op">(</span><span class="dv">0</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">;</span></span>
+<span id="cb59-55"><a href="constraints.html#cb59-55" aria-hidden="true" tabindex="-1"></a>      z<span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">=</span> <span class="fl">2.0</span><span class="op">*</span>x<span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">-</span> <span class="fl">0.5</span><span class="op">*</span>x<span class="op">(</span><span class="dv">0</span><span class="op">)</span> <span class="op">-</span> <span class="fl">0.25</span><span class="op">;</span></span>
+<span id="cb59-56"><a href="constraints.html#cb59-56" aria-hidden="true" tabindex="-1"></a>      model__<span class="op">.</span>sparseLinL2Constraint<span class="op">(</span>z<span class="op">,</span><span class="fl">2.0</span><span class="op">);</span></span>
+<span id="cb59-57"><a href="constraints.html#cb59-57" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span><span class="op">(</span>constrType<span class="op">==</span><span class="dv">5</span><span class="op">){</span></span>
+<span id="cb59-58"><a href="constraints.html#cb59-58" aria-hidden="true" tabindex="-1"></a>      model__<span class="op">.</span>sparseLinFunConstraint<span class="op">(</span>x<span class="op">,</span><span class="va">functor_</span><span class="op">);</span></span>
+<span id="cb59-59"><a href="constraints.html#cb59-59" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb59-60"><a href="constraints.html#cb59-60" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span> </span>
+<span id="cb59-61"><a href="constraints.html#cb59-61" aria-hidden="true" tabindex="-1"></a><span class="op">};</span> <span class="co">// end of struct</span></span></code></pre></div>
+<p>The model is built and run without constraints using (note <code>step.type = "RKBS32"</code>)</p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="constraints.html#cb60-1" aria-hidden="true" tabindex="-1"></a>mdl <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">build</span>(<span class="st">&quot;constraint_model.cpp&quot;</span>,<span class="at">step.type =</span> <span class="st">&quot;RKBS32&quot;</span>)</span></code></pre></div>
+<pre><code>## model name : model</code></pre>
+<pre><code>## process type : HMCProcessConstr</code></pre>
+<pre><code>## Runge Kutta step type : RKBS32</code></pre>
+<pre><code>## Transport map type : diagLinearTM_VARI</code></pre>
+<pre><code>## compilation exited successfully</code></pre>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="constraints.html#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># unconstrained</span></span>
+<span id="cb66-2"><a href="constraints.html#cb66-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(mdl,<span class="at">data=</span><span class="fu">list</span>(<span class="at">constrType=</span>0L))</span></code></pre></div>
+<pre><code>## Note: no integrated samples recorded</code></pre>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="constraints.html#cb68-1" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">pair.plot</span>(fit,<span class="st">&quot;x[1]&quot;</span>,<span class="st">&quot;x[2]&quot;</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+<div id="linear-constraints-dense-and-sparse" class="section level3 hasAnchor" number="5.4.1">
+<h3><span class="header-section-number">5.4.1</span> Linear constraints (dense and sparse)<a href="constraints.html#linear-constraints-dense-and-sparse" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="constraints.html#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># (dense) linear constraint 1.0-x(0)-x(1)&gt;0</span></span>
+<span id="cb69-2"><a href="constraints.html#cb69-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(mdl,<span class="at">data=</span><span class="fu">list</span>(<span class="at">constrType=</span>1L))</span></code></pre></div>
+<pre><code>## Note: no integrated samples recorded</code></pre>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="constraints.html#cb71-1" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">pair.plot</span>(fit,<span class="st">&quot;x[1]&quot;</span>,<span class="st">&quot;x[2]&quot;</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="constraints.html#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># linear constraint 1.0-x(0)-x(1)&gt;0</span></span>
+<span id="cb72-2"><a href="constraints.html#cb72-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(mdl,<span class="at">data=</span><span class="fu">list</span>(<span class="at">constrType=</span>2L))</span></code></pre></div>
+<pre><code>## Note: no integrated samples recorded</code></pre>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="constraints.html#cb74-1" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">pair.plot</span>(fit,<span class="st">&quot;x[1]&quot;</span>,<span class="st">&quot;x[2]&quot;</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+</div>
+<div id="l1-constraint" class="section level3 hasAnchor" number="5.4.2">
+<h3><span class="header-section-number">5.4.2</span> <span class="math inline">\(L^1\)</span> constraint<a href="constraints.html#l1-constraint" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="constraints.html#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># L1 norm of (x(0)-0.5,x(1)-0.25) smaller than 2.0</span></span>
+<span id="cb75-2"><a href="constraints.html#cb75-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(mdl,<span class="at">data=</span><span class="fu">list</span>(<span class="at">constrType=</span>3L))</span></code></pre></div>
+<pre><code>## Note: no integrated samples recorded</code></pre>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="constraints.html#cb77-1" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">pair.plot</span>(fit,<span class="st">&quot;x[1]&quot;</span>,<span class="st">&quot;x[2]&quot;</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+</div>
+<div id="l2-constraint" class="section level3 hasAnchor" number="5.4.3">
+<h3><span class="header-section-number">5.4.3</span> <span class="math inline">\(L^2\)</span> constraint<a href="constraints.html#l2-constraint" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="constraints.html#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="co"># L2 norm of (x(0) + 0.5, 2.0*x(1) - 0.5*x(0) - 0.25) smaller than 2.0</span></span>
+<span id="cb78-2"><a href="constraints.html#cb78-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(mdl,<span class="at">data=</span><span class="fu">list</span>(<span class="at">constrType=</span>4L))</span></code></pre></div>
+<pre><code>## Note: no integrated samples recorded</code></pre>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="constraints.html#cb80-1" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">pair.plot</span>(fit,<span class="st">&quot;x[1]&quot;</span>,<span class="st">&quot;x[2]&quot;</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+</div>
+<div id="general-nonlinear-constraint" class="section level3 hasAnchor" number="5.4.4">
+<h3><span class="header-section-number">5.4.4</span> General nonlinear constraint<a href="constraints.html#general-nonlinear-constraint" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="constraints.html#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># nonlinear;</span></span>
+<span id="cb81-2"><a href="constraints.html#cb81-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(mdl,<span class="at">data=</span><span class="fu">list</span>(<span class="at">constrType=</span>5L))</span></code></pre></div>
+<pre><code>## Note: no integrated samples recorded</code></pre>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="constraints.html#cb83-1" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">pair.plot</span>(fit,<span class="st">&quot;x[1]&quot;</span>,<span class="st">&quot;x[2]&quot;</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
 
+</div>
+</div>
 </div>
             </section>
 

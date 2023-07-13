@@ -23,7 +23,7 @@
 <meta name="author" content="Tore Selland Kleppe" />
 
 
-<meta name="date" content="2023-06-28" />
+<meta name="date" content="2023-07-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -185,7 +185,28 @@ div.csl-indent {
 <li class="chapter" data-level="4.3.3" data-path="model-specification-details.html"><a href="model-specification-details.html#generated-quantities"><i class="fa fa-check"></i><b>4.3.3</b> Generated quantities</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="constraints.html"><a href="constraints.html"><i class="fa fa-check"></i><b>5</b> Constraints</a></li>
+<li class="chapter" data-level="5" data-path="constraints.html"><a href="constraints.html"><i class="fa fa-check"></i><b>5</b> Constraints</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="constraints.html"><a href="constraints.html#specifying-constraints"><i class="fa fa-check"></i><b>5.1</b> Specifying constraints</a></li>
+<li class="chapter" data-level="5.2" data-path="constraints.html"><a href="constraints.html#special-constraints"><i class="fa fa-check"></i><b>5.2</b> Special constraints</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="constraints.html"><a href="constraints.html#dense-linear-constraints"><i class="fa fa-check"></i><b>5.2.1</b> Dense Linear constraints</a></li>
+<li class="chapter" data-level="5.2.2" data-path="constraints.html"><a href="constraints.html#sparse-linear-constraints"><i class="fa fa-check"></i><b>5.2.2</b> Sparse Linear constraints</a></li>
+<li class="chapter" data-level="5.2.3" data-path="constraints.html"><a href="constraints.html#sparse-linear-l1-constraints"><i class="fa fa-check"></i><b>5.2.3</b> Sparse Linear <span class="math inline">\(L^1\)</span> constraints</a></li>
+<li class="chapter" data-level="5.2.4" data-path="constraints.html"><a href="constraints.html#sparse-linear-l2-constraints"><i class="fa fa-check"></i><b>5.2.4</b> Sparse Linear <span class="math inline">\(L^2\)</span> constraints</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="constraints.html"><a href="constraints.html#non-linear-constraints"><i class="fa fa-check"></i><b>5.3</b> Non-linear constraints</a>
+<ul>
+<li class="chapter" data-level="5.3.1" data-path="constraints.html"><a href="constraints.html#constraint-functor-details"><i class="fa fa-check"></i><b>5.3.1</b> Details of the constraint functor</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="constraints.html"><a href="constraints.html#worked-example"><i class="fa fa-check"></i><b>5.4</b> Worked example</a>
+<ul>
+<li class="chapter" data-level="5.4.1" data-path="constraints.html"><a href="constraints.html#linear-constraints-dense-and-sparse"><i class="fa fa-check"></i><b>5.4.1</b> Linear constraints (dense and sparse)</a></li>
+<li class="chapter" data-level="5.4.2" data-path="constraints.html"><a href="constraints.html#l1-constraint"><i class="fa fa-check"></i><b>5.4.2</b> <span class="math inline">\(L^1\)</span> constraint</a></li>
+<li class="chapter" data-level="5.4.3" data-path="constraints.html"><a href="constraints.html#l2-constraint"><i class="fa fa-check"></i><b>5.4.3</b> <span class="math inline">\(L^2\)</span> constraint</a></li>
+<li class="chapter" data-level="5.4.4" data-path="constraints.html"><a href="constraints.html#general-nonlinear-constraint"><i class="fa fa-check"></i><b>5.4.4</b> General nonlinear constraint</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="amt-lib.html"><a href="amt-lib.html"><i class="fa fa-check"></i><b>6</b> The <code>amt</code>-library</a>
 <ul>
 <li class="chapter" data-level="6.1" data-path="amt-lib.html"><a href="amt-lib.html#amt-SPD-matrix"><i class="fa fa-check"></i><b>6.1</b> Utilities for symmetric positive definite matrices</a></li>
@@ -254,63 +275,63 @@ implementation of the methodology of <span class="citation">Kleppe (<a href="#re
 <p>The design of the library allows the user to use the same model specification for both Riemannian and regular fixed metric sampling (see Chapter <a href="the-samplers.html#the-samplers">7</a>).</p>
 <p>The methodology of <span class="citation">Kleppe (<a href="#ref-kleppe_amt" role="doc-biblioref">2022b</a>)</span> generally requires that all probability densities involved in the model where the argument depends on <span class="math inline">\(\boldsymbol \theta\)</span> (generally the conditional densities of priors and latent variables) to have continuous first order derivatives. To achieve such continuity, many of the below distributions are known probability distributions that have been transformed to have support on the whole real line in such a way that the resulting probability distribution is sufficiently smooth. These transformations are also desirable from a numerical point of view.</p>
 <p>As a basic example of such transformations involves the <span class="math inline">\(ExpGamma\)</span>-distribution (see below for proper definition):</p>
-<div class="sourceCode" id="cb54"><pre class="sourceCode cc"><code class="sourceCode cpp"><span id="cb54-1"><a href="amt-lib.html#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co">// inside operator()()</span></span>
-<span id="cb54-2"><a href="amt-lib.html#cb54-2" aria-hidden="true" tabindex="-1"></a>PARAMETER_SCALAR<span class="op">(</span>logSigma<span class="op">,</span><span class="fl">0.0</span><span class="op">);</span></span>
-<span id="cb54-3"><a href="amt-lib.html#cb54-3" aria-hidden="true" tabindex="-1"></a>model__<span class="op">+=</span>expGamma_ld<span class="op">(</span>logSigma<span class="op">,</span><span class="fl">1.0</span><span class="op">,</span><span class="fl">1.0</span><span class="op">);</span></span>
-<span id="cb54-4"><a href="amt-lib.html#cb54-4" aria-hidden="true" tabindex="-1"></a>varType sigma<span class="op">=</span>exp<span class="op">(</span>logSigma<span class="op">);</span> </span>
-<span id="cb54-5"><a href="amt-lib.html#cb54-5" aria-hidden="true" tabindex="-1"></a>model__<span class="op">.</span>generated<span class="op">(</span>asDouble<span class="op">(</span>sigma<span class="op">),</span><span class="st">&quot;sigma&quot;</span><span class="op">);</span></span></code></pre></div>
+<div class="sourceCode" id="cb84"><pre class="sourceCode cc"><code class="sourceCode cpp"><span id="cb84-1"><a href="amt-lib.html#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="co">// inside operator()()</span></span>
+<span id="cb84-2"><a href="amt-lib.html#cb84-2" aria-hidden="true" tabindex="-1"></a>PARAMETER_SCALAR<span class="op">(</span>logSigma<span class="op">,</span><span class="fl">0.0</span><span class="op">);</span></span>
+<span id="cb84-3"><a href="amt-lib.html#cb84-3" aria-hidden="true" tabindex="-1"></a>model__<span class="op">+=</span>expGamma_ld<span class="op">(</span>logSigma<span class="op">,</span><span class="fl">1.0</span><span class="op">,</span><span class="fl">1.0</span><span class="op">);</span></span>
+<span id="cb84-4"><a href="amt-lib.html#cb84-4" aria-hidden="true" tabindex="-1"></a>varType sigma<span class="op">=</span>exp<span class="op">(</span>logSigma<span class="op">);</span> </span>
+<span id="cb84-5"><a href="amt-lib.html#cb84-5" aria-hidden="true" tabindex="-1"></a>model__<span class="op">.</span>generated<span class="op">(</span>asDouble<span class="op">(</span>sigma<span class="op">),</span><span class="st">&quot;sigma&quot;</span><span class="op">);</span></span></code></pre></div>
 <p>In the above example, <code>sigma</code> will be exponentially distributed with mean 1 (until further conditioning is done) and will be recorded as a generated quantity.</p>
 <div id="amt-SPD-matrix" class="section level2 hasAnchor" number="6.1">
 <h2><span class="header-section-number">6.1</span> Utilities for symmetric positive definite matrices<a href="amt-lib.html#amt-SPD-matrix" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The <code>amt</code>-package provides a set of utilities for representing symmetric positive definite (SPD) matrices. Internally, this class template <code>SPDmatrix</code> represents a <span class="math inline">\(d \times d\)</span> SPD matrix as an “internal” vector of <span class="math inline">\(d(d+1)/2\)</span> <code>varTypes</code>.</p>
 <p><code>SPDmatrix</code> objects may be used as e.g. covariance- or precision matrices in multivariate normal distributions, and it also possible to assign e.g. Wishart distributions on such objects (though in practice, such assignments are really distributions on the internal vector, consistent with the matrix-valued distribution).</p>
 <p>The easiest way to construct a <code>SPDmatrix</code> is via the <code>PARAMETER_SPD_MATRIX(name,dim,...)</code> macro. Typical usage involves something like:</p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode cc"><code class="sourceCode cpp"><span id="cb55-1"><a href="amt-lib.html#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co">// inside operator()() : </span></span>
-<span id="cb55-2"><a href="amt-lib.html#cb55-2" aria-hidden="true" tabindex="-1"></a>PARAMETER_SPD_MATRIX<span class="op">(</span>P<span class="op">,</span><span class="dv">3</span><span class="op">);</span> </span>
-<span id="cb55-3"><a href="amt-lib.html#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="co">// Note: PARAMETER_SPD_MATRIX(P,3) really makes a parameter vector  </span></span>
-<span id="cb55-4"><a href="amt-lib.html#cb55-4" aria-hidden="true" tabindex="-1"></a><span class="co">// named P_internal, and subsequently constructs SPDmatrix&lt;varType&gt; P</span></span>
-<span id="cb55-5"><a href="amt-lib.html#cb55-5" aria-hidden="true" tabindex="-1"></a>Eigen<span class="op">::</span>VectorXd scaleDiag<span class="op">;</span> scaleDiag<span class="op">.</span>setConstant<span class="op">(</span><span class="dv">3</span><span class="op">,</span><span class="fl">4.0</span><span class="op">);</span></span>
-<span id="cb55-6"><a href="amt-lib.html#cb55-6" aria-hidden="true" tabindex="-1"></a>model__ <span class="op">+=</span> wishartDiagScale_ld<span class="op">(</span>P<span class="op">,</span>scaleDiag<span class="op">,</span><span class="fl">10.0</span><span class="op">);</span> </span>
-<span id="cb55-7"><a href="amt-lib.html#cb55-7" aria-hidden="true" tabindex="-1"></a><span class="co">// P has a Wishart(4*I,10.0) distribution a priori </span></span>
-<span id="cb55-8"><a href="amt-lib.html#cb55-8" aria-hidden="true" tabindex="-1"></a>model__<span class="op">.</span>generated<span class="op">(</span>P<span class="op">,</span><span class="st">&quot;P&quot;</span><span class="op">);</span> <span class="co">// full matrix stored</span></span>
-<span id="cb55-9"><a href="amt-lib.html#cb55-9" aria-hidden="true" tabindex="-1"></a>model__<span class="op">.</span>generated<span class="op">(</span>P<span class="op">.</span>coeff<span class="op">(</span><span class="dv">0</span><span class="op">,</span><span class="dv">2</span><span class="op">),</span><span class="st">&quot;P13&quot;</span><span class="op">);</span> <span class="co">// single element stored</span></span></code></pre></div>
+<div class="sourceCode" id="cb85"><pre class="sourceCode cc"><code class="sourceCode cpp"><span id="cb85-1"><a href="amt-lib.html#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="co">// inside operator()() : </span></span>
+<span id="cb85-2"><a href="amt-lib.html#cb85-2" aria-hidden="true" tabindex="-1"></a>PARAMETER_SPD_MATRIX<span class="op">(</span>P<span class="op">,</span><span class="dv">3</span><span class="op">);</span> </span>
+<span id="cb85-3"><a href="amt-lib.html#cb85-3" aria-hidden="true" tabindex="-1"></a><span class="co">// Note: PARAMETER_SPD_MATRIX(P,3) really makes a parameter vector  </span></span>
+<span id="cb85-4"><a href="amt-lib.html#cb85-4" aria-hidden="true" tabindex="-1"></a><span class="co">// named P_internal, and subsequently constructs SPDmatrix&lt;varType&gt; P</span></span>
+<span id="cb85-5"><a href="amt-lib.html#cb85-5" aria-hidden="true" tabindex="-1"></a>Eigen<span class="op">::</span>VectorXd scaleDiag<span class="op">;</span> scaleDiag<span class="op">.</span>setConstant<span class="op">(</span><span class="dv">3</span><span class="op">,</span><span class="fl">4.0</span><span class="op">);</span></span>
+<span id="cb85-6"><a href="amt-lib.html#cb85-6" aria-hidden="true" tabindex="-1"></a>model__ <span class="op">+=</span> wishartDiagScale_ld<span class="op">(</span>P<span class="op">,</span>scaleDiag<span class="op">,</span><span class="fl">10.0</span><span class="op">);</span> </span>
+<span id="cb85-7"><a href="amt-lib.html#cb85-7" aria-hidden="true" tabindex="-1"></a><span class="co">// P has a Wishart(4*I,10.0) distribution a priori </span></span>
+<span id="cb85-8"><a href="amt-lib.html#cb85-8" aria-hidden="true" tabindex="-1"></a>model__<span class="op">.</span>generated<span class="op">(</span>P<span class="op">,</span><span class="st">&quot;P&quot;</span><span class="op">);</span> <span class="co">// full matrix stored</span></span>
+<span id="cb85-9"><a href="amt-lib.html#cb85-9" aria-hidden="true" tabindex="-1"></a>model__<span class="op">.</span>generated<span class="op">(</span>P<span class="op">.</span>coeff<span class="op">(</span><span class="dv">0</span><span class="op">,</span><span class="dv">2</span><span class="op">),</span><span class="st">&quot;P13&quot;</span><span class="op">);</span> <span class="co">// single element stored</span></span></code></pre></div>
 <p>A complete class where the above code block is the body of the <code>operator()()</code>-method is stored in the file <code>wishart_example.cpp</code>, which is built an run via:</p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="amt-lib.html#cb56-1" aria-hidden="true" tabindex="-1"></a>mdl <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">build</span>(<span class="st">&quot;wishart_example.cpp&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="amt-lib.html#cb86-1" aria-hidden="true" tabindex="-1"></a>mdl <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">build</span>(<span class="st">&quot;wishart_example.cpp&quot;</span>)</span></code></pre></div>
 <pre><code>## model name : model</code></pre>
 <pre><code>## process type : HMCProcessConstr</code></pre>
 <pre><code>## Runge Kutta step type : RKDP54</code></pre>
 <pre><code>## Transport map type : diagLinearTM_VARI</code></pre>
 <pre><code>## compilation exited successfully</code></pre>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="amt-lib.html#cb62-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(mdl)</span>
-<span id="cb62-2"><a href="amt-lib.html#cb62-2" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">clean.model</span>(mdl,<span class="at">remove.all =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="amt-lib.html#cb92-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(mdl)</span>
+<span id="cb92-2"><a href="amt-lib.html#cb92-2" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">clean.model</span>(mdl,<span class="at">remove.all =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="amt-lib.html#cb64-1" aria-hidden="true" tabindex="-1"></a>fit</span></code></pre></div>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="amt-lib.html#cb94-1" aria-hidden="true" tabindex="-1"></a>fit</span></code></pre></div>
 <pre><code>## run output for model: model</code></pre>
 <pre><code>## # of chains : 4</code></pre>
 <pre><code>## Summary based on discrete samples:</code></pre>
 <pre><code>##                 mean se_mean     sd n_eff  Rhat
-## P_internal[1]  3.573   0.010  0.491  2463 1.002
-## P_internal[2]  3.472   0.010  0.497  2459 1.002
-## P_internal[3]  3.332   0.010  0.537  3024 1.000
-## P_internal[4] -0.006   0.007  0.372  2977 1.003
-## P_internal[5]  0.001   0.006  0.361  3106 1.002
-## P_internal[6]  0.001   0.008  0.378  2500 1.001
-## P[1,1]        39.809   0.363 18.238  2522 1.002
-## P[2,1]        -0.093   0.238 13.114  3025 1.001
-## P[3,1]         0.149   0.232 12.892  3078 1.001
-## P[2,2]        40.437   0.353 18.131  2629 1.002
-## P[3,2]         0.055   0.242 12.727  2769 1.001
-## P[3,3]        40.079   0.316 17.953  3231 1.001
-## P13            0.149   0.232 12.892  3078 1.001</code></pre>
+## P_internal[1]  3.578   0.010  0.485  2492 1.005
+## P_internal[2]  3.466   0.010  0.497  2431 1.003
+## P_internal[3]  3.330   0.009  0.539  3209 1.002
+## P_internal[4]  0.000   0.007  0.370  3153 1.002
+## P_internal[5] -0.009   0.007  0.365  3057 1.001
+## P_internal[6]  0.006   0.008  0.378  2498 1.001
+## P[1,1]        39.964   0.364 18.438  2565 1.005
+## P[2,1]         0.124   0.236 13.323  3176 1.002
+## P[3,1]        -0.229   0.236 13.037  3037 1.000
+## P[2,2]        40.288   0.353 17.848  2559 1.005
+## P[3,2]         0.341   0.245 12.695  2680 1.001
+## P[3,3]        40.141   0.312 18.027  3330 1.001
+## P13           -0.229   0.236 13.037  3037 1.000</code></pre>
 <pre><code>## summary based on integrated samples:</code></pre>
 <pre><code>##        estimate se_estimate n_eff  Rhat
-## P[1,1]   39.779       0.182  1870 1.004
-## P[2,1]    0.017       0.057  6420 1.022
-## P[3,1]    0.046       0.054  6517 1.033
-## P[2,2]   40.282       0.180  1788 1.003
-## P[3,2]    0.051       0.100  2227 1.002
-## P[3,3]   40.133       0.162  2210 1.002
-## P13       0.046       0.054  6517 1.033</code></pre>
+## P[1,1]   39.673       0.190  1690 1.006
+## P[2,1]    0.025       0.054  7448 1.040
+## P[3,1]    0.052       0.054  6768 1.033
+## P[2,2]   40.231       0.182  1733 1.004
+## P[3,2]    0.156       0.110  1972 1.003
+## P[3,3]   40.250       0.166  2207 1.002
+## P13       0.052       0.054  6768 1.033</code></pre>
 <pre><code>## NOTE: integrated samples do NOT reflect the complete target distibution, only indicated moments with respect to the target distribution</code></pre>
 <p>Notice that by default, the “internal” parameter vector <code>P_internal</code> is stored<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> in addition to the generated quantities. Note, in this case, we would expect <span class="math inline">\(E(\mathbf P)=40 \mathbf I\)</span>.</p>
 </div>

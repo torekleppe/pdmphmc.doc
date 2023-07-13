@@ -23,7 +23,7 @@
 <meta name="author" content="Tore Selland Kleppe" />
 
 
-<meta name="date" content="2023-06-28" />
+<meta name="date" content="2023-07-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -185,7 +185,28 @@ div.csl-indent {
 <li class="chapter" data-level="4.3.3" data-path="model-specification-details.html"><a href="model-specification-details.html#generated-quantities"><i class="fa fa-check"></i><b>4.3.3</b> Generated quantities</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="constraints.html"><a href="constraints.html"><i class="fa fa-check"></i><b>5</b> Constraints</a></li>
+<li class="chapter" data-level="5" data-path="constraints.html"><a href="constraints.html"><i class="fa fa-check"></i><b>5</b> Constraints</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="constraints.html"><a href="constraints.html#specifying-constraints"><i class="fa fa-check"></i><b>5.1</b> Specifying constraints</a></li>
+<li class="chapter" data-level="5.2" data-path="constraints.html"><a href="constraints.html#special-constraints"><i class="fa fa-check"></i><b>5.2</b> Special constraints</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="constraints.html"><a href="constraints.html#dense-linear-constraints"><i class="fa fa-check"></i><b>5.2.1</b> Dense Linear constraints</a></li>
+<li class="chapter" data-level="5.2.2" data-path="constraints.html"><a href="constraints.html#sparse-linear-constraints"><i class="fa fa-check"></i><b>5.2.2</b> Sparse Linear constraints</a></li>
+<li class="chapter" data-level="5.2.3" data-path="constraints.html"><a href="constraints.html#sparse-linear-l1-constraints"><i class="fa fa-check"></i><b>5.2.3</b> Sparse Linear <span class="math inline">\(L^1\)</span> constraints</a></li>
+<li class="chapter" data-level="5.2.4" data-path="constraints.html"><a href="constraints.html#sparse-linear-l2-constraints"><i class="fa fa-check"></i><b>5.2.4</b> Sparse Linear <span class="math inline">\(L^2\)</span> constraints</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="constraints.html"><a href="constraints.html#non-linear-constraints"><i class="fa fa-check"></i><b>5.3</b> Non-linear constraints</a>
+<ul>
+<li class="chapter" data-level="5.3.1" data-path="constraints.html"><a href="constraints.html#constraint-functor-details"><i class="fa fa-check"></i><b>5.3.1</b> Details of the constraint functor</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="constraints.html"><a href="constraints.html#worked-example"><i class="fa fa-check"></i><b>5.4</b> Worked example</a>
+<ul>
+<li class="chapter" data-level="5.4.1" data-path="constraints.html"><a href="constraints.html#linear-constraints-dense-and-sparse"><i class="fa fa-check"></i><b>5.4.1</b> Linear constraints (dense and sparse)</a></li>
+<li class="chapter" data-level="5.4.2" data-path="constraints.html"><a href="constraints.html#l1-constraint"><i class="fa fa-check"></i><b>5.4.2</b> <span class="math inline">\(L^1\)</span> constraint</a></li>
+<li class="chapter" data-level="5.4.3" data-path="constraints.html"><a href="constraints.html#l2-constraint"><i class="fa fa-check"></i><b>5.4.3</b> <span class="math inline">\(L^2\)</span> constraint</a></li>
+<li class="chapter" data-level="5.4.4" data-path="constraints.html"><a href="constraints.html#general-nonlinear-constraint"><i class="fa fa-check"></i><b>5.4.4</b> General nonlinear constraint</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="amt-lib.html"><a href="amt-lib.html"><i class="fa fa-check"></i><b>6</b> The <code>amt</code>-library</a>
 <ul>
 <li class="chapter" data-level="6.1" data-path="amt-lib.html"><a href="amt-lib.html#amt-SPD-matrix"><i class="fa fa-check"></i><b>6.1</b> Utilities for symmetric positive definite matrices</a></li>
@@ -264,7 +285,7 @@ div.csl-indent {
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="pdmphmc-hello-world.html#cb1-1" aria-hidden="true" tabindex="-1"></a>success <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">testSystem</span>()</span></code></pre></div>
 <pre><code>## model name : model</code></pre>
 <pre><code>## process type : HMCProcessConstr</code></pre>
-<pre><code>## Runge Kutta step type : RKDP54</code></pre>
+<pre><code>## Runge Kutta step type : RKBS32</code></pre>
 <pre><code>## Transport map type : diagLinearTM_VARI</code></pre>
 <pre><code>## compilation exited successfully</code></pre>
 <pre><code>## model ran successfully</code></pre>

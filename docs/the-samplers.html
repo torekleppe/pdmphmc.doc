@@ -23,7 +23,7 @@
 <meta name="author" content="Tore Selland Kleppe" />
 
 
-<meta name="date" content="2023-06-28" />
+<meta name="date" content="2023-07-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -185,7 +185,28 @@ div.csl-indent {
 <li class="chapter" data-level="4.3.3" data-path="model-specification-details.html"><a href="model-specification-details.html#generated-quantities"><i class="fa fa-check"></i><b>4.3.3</b> Generated quantities</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="constraints.html"><a href="constraints.html"><i class="fa fa-check"></i><b>5</b> Constraints</a></li>
+<li class="chapter" data-level="5" data-path="constraints.html"><a href="constraints.html"><i class="fa fa-check"></i><b>5</b> Constraints</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="constraints.html"><a href="constraints.html#specifying-constraints"><i class="fa fa-check"></i><b>5.1</b> Specifying constraints</a></li>
+<li class="chapter" data-level="5.2" data-path="constraints.html"><a href="constraints.html#special-constraints"><i class="fa fa-check"></i><b>5.2</b> Special constraints</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="constraints.html"><a href="constraints.html#dense-linear-constraints"><i class="fa fa-check"></i><b>5.2.1</b> Dense Linear constraints</a></li>
+<li class="chapter" data-level="5.2.2" data-path="constraints.html"><a href="constraints.html#sparse-linear-constraints"><i class="fa fa-check"></i><b>5.2.2</b> Sparse Linear constraints</a></li>
+<li class="chapter" data-level="5.2.3" data-path="constraints.html"><a href="constraints.html#sparse-linear-l1-constraints"><i class="fa fa-check"></i><b>5.2.3</b> Sparse Linear <span class="math inline">\(L^1\)</span> constraints</a></li>
+<li class="chapter" data-level="5.2.4" data-path="constraints.html"><a href="constraints.html#sparse-linear-l2-constraints"><i class="fa fa-check"></i><b>5.2.4</b> Sparse Linear <span class="math inline">\(L^2\)</span> constraints</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="constraints.html"><a href="constraints.html#non-linear-constraints"><i class="fa fa-check"></i><b>5.3</b> Non-linear constraints</a>
+<ul>
+<li class="chapter" data-level="5.3.1" data-path="constraints.html"><a href="constraints.html#constraint-functor-details"><i class="fa fa-check"></i><b>5.3.1</b> Details of the constraint functor</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="constraints.html"><a href="constraints.html#worked-example"><i class="fa fa-check"></i><b>5.4</b> Worked example</a>
+<ul>
+<li class="chapter" data-level="5.4.1" data-path="constraints.html"><a href="constraints.html#linear-constraints-dense-and-sparse"><i class="fa fa-check"></i><b>5.4.1</b> Linear constraints (dense and sparse)</a></li>
+<li class="chapter" data-level="5.4.2" data-path="constraints.html"><a href="constraints.html#l1-constraint"><i class="fa fa-check"></i><b>5.4.2</b> <span class="math inline">\(L^1\)</span> constraint</a></li>
+<li class="chapter" data-level="5.4.3" data-path="constraints.html"><a href="constraints.html#l2-constraint"><i class="fa fa-check"></i><b>5.4.3</b> <span class="math inline">\(L^2\)</span> constraint</a></li>
+<li class="chapter" data-level="5.4.4" data-path="constraints.html"><a href="constraints.html#general-nonlinear-constraint"><i class="fa fa-check"></i><b>5.4.4</b> General nonlinear constraint</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="amt-lib.html"><a href="amt-lib.html"><i class="fa fa-check"></i><b>6</b> The <code>amt</code>-library</a>
 <ul>
 <li class="chapter" data-level="6.1" data-path="amt-lib.html"><a href="amt-lib.html#amt-SPD-matrix"><i class="fa fa-check"></i><b>6.1</b> Utilities for symmetric positive definite matrices</a></li>
@@ -305,7 +326,13 @@ The metric tensor scheme is chosen during the <code>pdmphmc::build()</code>-proc
 </div>
 <div id="ODE-solvers" class="section level2 hasAnchor" number="7.3">
 <h2><span class="header-section-number">7.3</span> ODE solvers<a href="the-samplers.html#ODE-solvers" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>So far, only the order 5 (4) pair of <span class="citation">Dormand and Prince (<a href="#ref-DORMAND198019" role="doc-biblioref">1980</a>)</span> with dense output is used for integrating the differential equations. A PI controller is used for adaptive time step sizes.</p>
+<p>The ODE solver is a bespoke Runge Kutta method with a PI controller for adaptive time step sizes. The Runge Kutta type steps (including dense formulas) implemented so far are</p>
+<ul>
+<li>The order 5 (4) pair of <span class="citation">Dormand and Prince (<a href="#ref-DORMAND198019" role="doc-biblioref">1980</a>)</span> (obtained by choosing <code>step.type = "RKDP54"</code> in <code>build()</code>).</li>
+<li>The order 3 (2) pair of <span class="citation">Bogacki and Shampine (<a href="#ref-BOGACKI1989321" role="doc-biblioref">1989</a>)</span> (obtained by choosing <code>step.type = "RKBS32"</code> in <code>build()</code>)</li>
+</ul>
+<p>The latter is generally preferred only for models with constraints (see Section <a href="constraints.html#constraints">5</a>) or when running with
+very lax integration tolerances.</p>
 </div>
 <div id="scaling-adaptation" class="section level2 hasAnchor" number="7.4">
 <h2><span class="header-section-number">7.4</span> Scaling adaptation<a href="the-samplers.html#scaling-adaptation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -319,6 +346,9 @@ The metric tensor scheme is chosen during the <code>pdmphmc::build()</code>-proc
 </div>
 <h3>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-BOGACKI1989321" class="csl-entry">
+Bogacki, P., and L. F. Shampine. 1989. <span>“A 3(2) Pair of <span>R</span>unge - <span>K</span>utta Formulas.”</span> <em>Applied Mathematics Letters</em> 2 (4): 321–25. https://doi.org/<a href="https://doi.org/10.1016/0893-9659(89)90079-7">https://doi.org/10.1016/0893-9659(89)90079-7</a>.
+</div>
 <div id="ref-davis_ldl" class="csl-entry">
 Davis, T. A. 2005. <span>“Algorithm 849: A Concise Sparse Cholesky Factorization Package.”</span> <em>ACM Transactions Mathematical Software</em> 31: 587–91.
 </div>

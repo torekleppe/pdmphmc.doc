@@ -75,7 +75,13 @@ It is also possible to specify ones own metric tensor. One turns off the default
 
 ## ODE solvers {#ODE-solvers}
 
-So far, only the order 5 (4) pair of @DORMAND198019 with dense output is used for integrating the differential equations. A PI controller is used for adaptive time step sizes.
+The ODE solver is a bespoke Runge Kutta method with a PI controller for adaptive time step sizes. The Runge Kutta type steps (including dense formulas) implemented so far are
+
+* The order 5 (4) pair of @DORMAND198019 (obtained by choosing `step.type = "RKDP54"` in `build()`).
+* The order 3 (2) pair of @BOGACKI1989321 (obtained by choosing `step.type = "RKBS32"` in `build()`)
+
+The latter is generally preferred only for models with constraints (see Section \@ref(constraints)) or when running with
+very lax integration tolerances.
 
 ## Scaling adaptation {#scaling-adaptation}
 

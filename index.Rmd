@@ -5,17 +5,21 @@ date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 documentclass: book
 bibliography: [book.bib, packages.bib]
-# url: your book url like https://bookdown.org/yihui/bookdown
-# cover-image: path to the social sharing image like images/cover.jpg
+url: https://torekleppe.github.io/pdmphmc.doc/
+#cover-image: ./cover_image.pdf
 description: |
   Description in index.Rmd
 link-citations: yes
 ---
 
+```{r,echo=FALSE}
+knitr::include_graphics("cover_image.png")
+```
 
 ```{r, echo=FALSE}
-eval.examples=TRUE #FALSE #
+eval.examples= TRUE #FALSE # 
 ```
+
 
 
 # About

@@ -23,7 +23,7 @@
 <meta name="author" content="Tore Selland Kleppe" />
 
 
-<meta name="date" content="2023-06-28" />
+<meta name="date" content="2023-07-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -185,7 +185,28 @@ div.csl-indent {
 <li class="chapter" data-level="4.3.3" data-path="model-specification-details.html"><a href="model-specification-details.html#generated-quantities"><i class="fa fa-check"></i><b>4.3.3</b> Generated quantities</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="constraints.html"><a href="constraints.html"><i class="fa fa-check"></i><b>5</b> Constraints</a></li>
+<li class="chapter" data-level="5" data-path="constraints.html"><a href="constraints.html"><i class="fa fa-check"></i><b>5</b> Constraints</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="constraints.html"><a href="constraints.html#specifying-constraints"><i class="fa fa-check"></i><b>5.1</b> Specifying constraints</a></li>
+<li class="chapter" data-level="5.2" data-path="constraints.html"><a href="constraints.html#special-constraints"><i class="fa fa-check"></i><b>5.2</b> Special constraints</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="constraints.html"><a href="constraints.html#dense-linear-constraints"><i class="fa fa-check"></i><b>5.2.1</b> Dense Linear constraints</a></li>
+<li class="chapter" data-level="5.2.2" data-path="constraints.html"><a href="constraints.html#sparse-linear-constraints"><i class="fa fa-check"></i><b>5.2.2</b> Sparse Linear constraints</a></li>
+<li class="chapter" data-level="5.2.3" data-path="constraints.html"><a href="constraints.html#sparse-linear-l1-constraints"><i class="fa fa-check"></i><b>5.2.3</b> Sparse Linear <span class="math inline">\(L^1\)</span> constraints</a></li>
+<li class="chapter" data-level="5.2.4" data-path="constraints.html"><a href="constraints.html#sparse-linear-l2-constraints"><i class="fa fa-check"></i><b>5.2.4</b> Sparse Linear <span class="math inline">\(L^2\)</span> constraints</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="constraints.html"><a href="constraints.html#non-linear-constraints"><i class="fa fa-check"></i><b>5.3</b> Non-linear constraints</a>
+<ul>
+<li class="chapter" data-level="5.3.1" data-path="constraints.html"><a href="constraints.html#constraint-functor-details"><i class="fa fa-check"></i><b>5.3.1</b> Details of the constraint functor</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="constraints.html"><a href="constraints.html#worked-example"><i class="fa fa-check"></i><b>5.4</b> Worked example</a>
+<ul>
+<li class="chapter" data-level="5.4.1" data-path="constraints.html"><a href="constraints.html#linear-constraints-dense-and-sparse"><i class="fa fa-check"></i><b>5.4.1</b> Linear constraints (dense and sparse)</a></li>
+<li class="chapter" data-level="5.4.2" data-path="constraints.html"><a href="constraints.html#l1-constraint"><i class="fa fa-check"></i><b>5.4.2</b> <span class="math inline">\(L^1\)</span> constraint</a></li>
+<li class="chapter" data-level="5.4.3" data-path="constraints.html"><a href="constraints.html#l2-constraint"><i class="fa fa-check"></i><b>5.4.3</b> <span class="math inline">\(L^2\)</span> constraint</a></li>
+<li class="chapter" data-level="5.4.4" data-path="constraints.html"><a href="constraints.html#general-nonlinear-constraint"><i class="fa fa-check"></i><b>5.4.4</b> General nonlinear constraint</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="amt-lib.html"><a href="amt-lib.html"><i class="fa fa-check"></i><b>6</b> The <code>amt</code>-library</a>
 <ul>
 <li class="chapter" data-level="6.1" data-path="amt-lib.html"><a href="amt-lib.html#amt-SPD-matrix"><i class="fa fa-check"></i><b>6.1</b> Utilities for symmetric positive definite matrices</a></li>
@@ -420,26 +441,26 @@ log-densities with names ending with <code>_ld</code> or <code>_lm</code> are av
 <pre><code>## # of chains : 4</code></pre>
 <pre><code>## Summary based on discrete samples:</code></pre>
 <pre><code>##                 mean se_mean    sd n_eff  Rhat
-## x[1]          -0.001   0.017 0.981  3238 1.004
-## x[2]          -0.001   0.017 1.032  3528 1.001
-## x[3]          -0.001   0.017 1.025  3704 1.000
-## x[4]          -0.004   0.017 0.979  3384 1.001
-## x_gen[1]      -0.001   0.017 0.981  3238 1.004
-## x_gen[2]      -0.001   0.017 1.032  3528 1.001
-## x_gen[3]      -0.001   0.017 1.025  3704 1.000
-## x_gen[4]      -0.004   0.017 0.979  3384 1.001
-## x1_cube        0.004   0.067 3.920  3465 1.005
-## x2_exp         1.706   0.040 2.371  3546 1.001
-## quadraticNorm  4.034   0.069 2.897  1750 1.000</code></pre>
+## x[1]          -0.003   0.017 0.977  3301 1.004
+## x[2]          -0.007   0.018 1.035  3495 1.003
+## x[3]          -0.001   0.017 1.014  3640 0.999
+## x[4]           0.002   0.017 0.973  3397 1.002
+## x_gen[1]      -0.003   0.017 0.977  3301 1.004
+## x_gen[2]      -0.007   0.018 1.035  3495 1.003
+## x_gen[3]      -0.001   0.017 1.014  3640 0.999
+## x_gen[4]       0.002   0.017 0.973  3397 1.002
+## x1_cube       -0.001   0.063 3.797  3599 1.005
+## x2_exp         1.697   0.040 2.345  3415 1.002
+## quadraticNorm  4.000   0.070 2.845  1661 1.002</code></pre>
 <pre><code>## summary based on integrated samples:</code></pre>
 <pre><code>##               estimate se_estimate n_eff  Rhat
-## x_gen[1]         0.007       0.005  6187 1.005
-## x_gen[2]         0.003       0.005  6009 1.001
-## x_gen[3]         0.004       0.005  6115 1.001
-## x_gen[4]        -0.002       0.005  6197 1.000
-## x1_cube          0.019       0.018  6357 1.008
-## x2_exp           1.698       0.034  1157 1.002
-## quadraticNorm    4.025       0.066   863 1.002</code></pre>
+## x_gen[1]         0.005       0.005  6235 1.004
+## x_gen[2]         0.003       0.005  5887 1.002
+## x_gen[3]         0.004       0.005  6369 1.003
+## x_gen[4]        -0.002       0.005  5919 1.000
+## x1_cube          0.016       0.018  6310 1.007
+## x2_exp           1.708       0.037   982 1.003
+## quadraticNorm    4.020       0.068   826 1.003</code></pre>
 <pre><code>## NOTE: integrated samples do NOT reflect the complete target distibution, only indicated moments with respect to the target distribution</code></pre>
 <p>It is seen that discrete time samples (which reflect target distribution) are recorded (by default) for the parameters (in this case <code>x[1]</code>,…,<code>x[4]</code>) and the generated quantities (here <code>x_gen[1]</code>,…,<code>x_gen[4]</code>,<code>x1_cube</code>,<code>x2_exp</code>,<code>quadraticNorm</code>).</p>
 <p>Integrated samples for calculating moments with respect to the target distribution are recorded for the generated quantities only.</p>

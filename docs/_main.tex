@@ -117,7 +117,7 @@
 
 \title{pdmphmc - numerical generalized randomized HMC processes for \texttt{R}}
 \author{Tore Selland Kleppe}
-\date{2023-06-28}
+\date{2023-07-13}
 
 \begin{document}
 \maketitle
@@ -126,6 +126,8 @@
 \setcounter{tocdepth}{1}
 \tableofcontents
 }
+\includegraphics{cover_image.png}
+
 \hypertarget{about}{%
 \chapter{About}\label{about}}
 
@@ -202,7 +204,7 @@ The simplest way to check your installation is to try to run the \texttt{testSys
 \end{verbatim}
 
 \begin{verbatim}
-## Runge Kutta step type : RKDP54
+## Runge Kutta step type : RKBS32
 \end{verbatim}
 
 \begin{verbatim}
@@ -338,9 +340,9 @@ Finally, get a summary of the sampled- and generated quantities, based on \textt
 
 \begin{verbatim}
 ##         mean se_mean    sd n_eff  Rhat
-## mu     0.074   0.006 0.340  2939 1.001
-## lambda 0.027   0.010 0.518  2791 1.002
-## sigma  1.050   0.006 0.298  2784 1.003
+## mu     0.079   0.006 0.340  2804 1.001
+## lambda 0.025   0.010 0.511  2746 1.003
+## sigma  1.048   0.006 0.293  2763 1.003
 \end{verbatim}
 
 \begin{verbatim}
@@ -349,7 +351,7 @@ Finally, get a summary of the sampled- and generated quantities, based on \textt
 
 \begin{verbatim}
 ##    estimate se_estimate n_eff  Rhat
-## V1    1.049       0.004  1823 1.002
+## V1    1.049       0.004  1794 1.001
 \end{verbatim}
 
 \begin{verbatim}
@@ -364,7 +366,7 @@ Further functions exist for inspecting the output, e.g.~trace plots
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-8-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-9-1.pdf}
 
 In the next chapter, a more detailed summary of the possibilities of the model specification is given.
 
@@ -690,17 +692,17 @@ Then build and run the model:
 
 \begin{verbatim}
 ##                 mean se_mean    sd n_eff  Rhat
-## x[1]          -0.004   0.017 0.969  3405 1.004
-## x[2]          -0.005   0.017 1.035  3559 1.003
-## x[3]           0.002   0.017 1.021  3760 1.000
-## x[4]           0.000   0.017 0.972  3425 1.002
-## x_gen[1]      -0.004   0.017 0.969  3405 1.004
-## x_gen[2]      -0.005   0.017 1.035  3559 1.003
-## x_gen[3]       0.002   0.017 1.021  3760 1.000
-## x_gen[4]       0.000   0.017 0.972  3425 1.002
-## x1_cube        0.009   0.059 3.624  3796 1.004
-## x2_exp         1.695   0.039 2.312  3536 1.001
-## quadraticNorm  3.996   0.070 2.805  1610 1.002
+## x[1]          -0.003   0.017 0.977  3301 1.004
+## x[2]          -0.007   0.018 1.035  3495 1.003
+## x[3]          -0.001   0.017 1.014  3640 0.999
+## x[4]           0.002   0.017 0.973  3397 1.002
+## x_gen[1]      -0.003   0.017 0.977  3301 1.004
+## x_gen[2]      -0.007   0.018 1.035  3495 1.003
+## x_gen[3]      -0.001   0.017 1.014  3640 0.999
+## x_gen[4]       0.002   0.017 0.973  3397 1.002
+## x1_cube       -0.001   0.063 3.797  3599 1.005
+## x2_exp         1.697   0.040 2.345  3415 1.002
+## quadraticNorm  4.000   0.070 2.845  1661 1.002
 \end{verbatim}
 
 \begin{verbatim}
@@ -709,13 +711,13 @@ Then build and run the model:
 
 \begin{verbatim}
 ##               estimate se_estimate n_eff  Rhat
-## x_gen[1]         0.005       0.005  5983 1.004
-## x_gen[2]         0.003       0.005  5747 1.002
-## x_gen[3]         0.004       0.005  6363 1.002
-## x_gen[4]        -0.002       0.005  5884 1.000
-## x1_cube          0.010       0.018  5937 1.008
-## x2_exp           1.707       0.038   944 1.004
-## quadraticNorm    4.019       0.068   825 1.003
+## x_gen[1]         0.005       0.005  6235 1.004
+## x_gen[2]         0.003       0.005  5887 1.002
+## x_gen[3]         0.004       0.005  6369 1.003
+## x_gen[4]        -0.002       0.005  5919 1.000
+## x1_cube          0.016       0.018  6310 1.007
+## x2_exp           1.708       0.037   982 1.003
+## quadraticNorm    4.020       0.068   826 1.003
 \end{verbatim}
 
 \begin{verbatim}
@@ -738,7 +740,394 @@ Some minor comments related to performance are in order here:
 \hypertarget{constraints}{%
 \chapter{Constraints}\label{constraints}}
 
-To be described in detail soon.
+In a recent update of \texttt{pdmphmc}, constraints are included as a part of the model specification.
+
+The parameters of the model may be specified to be constrained to on a specific domain, i.e.~so that sampling is performed with stationary distribution being
+\[
+\propto \pi(\boldsymbol \theta) \; \text{such that}\; c_1(\boldsymbol \theta)>0,\dots,c_B(\boldsymbol \theta)>0
+\]
+where \(c_b(\boldsymbol \theta),\;b=1,\dots,B\) are scalar constraint functions.
+
+Further details regarding the numerical details may be found in a paper which will be published very soon.
+
+\textbf{Constraints are so far only available for the fixed mass sampler, and requires that the \texttt{RKBS32} integrator is used (see Section \ref{ODE-solvers}, obtained using \texttt{step.type\ =\ "RKBS32"} in \texttt{build()}) }.
+
+\hypertarget{specifying-constraints}{%
+\section{Specifying constraints}\label{specifying-constraints}}
+
+There are several different types of constraints, all of which are specified by member-functions
+of the \texttt{amt::amtModel} class (see examples below).
+
+In many cases, a given constraint may be specified in multiple ways, and in general, always using the non-linear constraint specification described at the end of this subsection. However, \emph{if the constraint in question has some special structure, this may be exploited in the numerical implementation to obtain faster sampling}, and should therefore be used. Below, first the different such special structures are described, before general non-linear constraints are discussed.
+
+\hypertarget{special-constraints}{%
+\section{Special constraints}\label{special-constraints}}
+
+The following special constraints are available:
+
+\hypertarget{dense-linear-constraints}{%
+\subsection{Dense Linear constraints}\label{dense-linear-constraints}}
+
+may be written as
+\[
+\mathbf a^T \boldsymbol \theta - b>0
+\]
+where \(\mathbf a\) is a constant (i.e.~not depending on \(\boldsymbol \theta\)) vector and \(b\) is a constant scalar. Specified using \texttt{linConstraint()}. The user is only responsible for providing code for \(\mathbf a^T \boldsymbol \theta - b\). E.g.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{template} \OperatorTok{\textless{}} \KeywordTok{class}\NormalTok{ varType}\OperatorTok{,} \KeywordTok{class}\NormalTok{ tensorType}\OperatorTok{,} \DataTypeTok{bool}\NormalTok{ storeNames}\OperatorTok{\textgreater{}}
+  \DataTypeTok{void} \KeywordTok{operator}\OperatorTok{()(}\NormalTok{amt}\OperatorTok{::}\NormalTok{amtModel}\OperatorTok{\textless{}}\NormalTok{varType}\OperatorTok{,}\NormalTok{tensorType}\OperatorTok{,}\NormalTok{storeNames}\OperatorTok{\textgreater{}} \OperatorTok{\&}\NormalTok{model\_\_}\OperatorTok{)\{}
+\NormalTok{    PARAMETER\_VECTOR}\OperatorTok{(}\NormalTok{theta}\OperatorTok{,}\DecValTok{2}\OperatorTok{);} \CommentTok{// parameter (sampled quantity)}
+    \CommentTok{/* ... */}
+\NormalTok{    varType s }\OperatorTok{=} \FloatTok{0.5}\OperatorTok{*}\NormalTok{theta}\OperatorTok{(}\DecValTok{0}\OperatorTok{){-}}\FloatTok{2.0}\OperatorTok{+}\NormalTok{theta}\OperatorTok{(}\DecValTok{1}\OperatorTok{);} \CommentTok{// should be positive}
+\NormalTok{    model\_\_}\OperatorTok{.}\NormalTok{linConstraint}\OperatorTok{(}\NormalTok{s}\OperatorTok{);} \CommentTok{// specify the constraint}
+  \OperatorTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+ensures that sampling only occur for values of \(\boldsymbol \theta\) so that \(s=\theta_1 /2 + \theta_2-2>0\).
+
+\hypertarget{sparse-linear-constraints}{%
+\subsection{Sparse Linear constraints}\label{sparse-linear-constraints}}
+
+are essentially the same as dense linear constraints, but where \(\mathbf a\) is assumed to contain many zeros. Specified using \texttt{sparseLinConstraint()}.
+
+\hypertarget{sparse-linear-l1-constraints}{%
+\subsection{\texorpdfstring{Sparse Linear \(L^1\) constraints}{Sparse Linear L\^{}1 constraints}}\label{sparse-linear-l1-constraints}}
+
+may be expressed as
+\[
+\parallel \mathbf A \boldsymbol \theta - \mathbf b \parallel_1 < c
+\]
+for constant matrix \(\mathbf A\), constant vector \(b\) and constant scalar \(c\). Specified using \texttt{sparseLinL1Constraint()} The user is only responsible for code evaluating \(\mathbf A \boldsymbol \theta - \mathbf b\) and \(c\). E.g.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{template} \OperatorTok{\textless{}} \KeywordTok{class}\NormalTok{ varType}\OperatorTok{,} \KeywordTok{class}\NormalTok{ tensorType}\OperatorTok{,} \DataTypeTok{bool}\NormalTok{ storeNames}\OperatorTok{\textgreater{}}
+  \DataTypeTok{void} \KeywordTok{operator}\OperatorTok{()(}\NormalTok{amt}\OperatorTok{::}\NormalTok{amtModel}\OperatorTok{\textless{}}\NormalTok{varType}\OperatorTok{,}\NormalTok{tensorType}\OperatorTok{,}\NormalTok{storeNames}\OperatorTok{\textgreater{}} \OperatorTok{\&}\NormalTok{model\_\_}\OperatorTok{)\{}
+\NormalTok{    PARAMETER\_VECTOR}\OperatorTok{(}\NormalTok{theta}\OperatorTok{,}\DecValTok{2}\OperatorTok{);} \CommentTok{// parameter (sampled quantity)}
+    \CommentTok{/* ... */}
+\NormalTok{    VectorXv t}\OperatorTok{(}\DecValTok{3}\OperatorTok{);} \CommentTok{// should have L1{-}norm less than 2.0}
+\NormalTok{    t}\OperatorTok{(}\DecValTok{0}\OperatorTok{)} \OperatorTok{=}\NormalTok{ theta}\OperatorTok{(}\DecValTok{0}\OperatorTok{)} \OperatorTok{+} \FloatTok{1.0}\OperatorTok{;} 
+\NormalTok{    t}\OperatorTok{(}\DecValTok{1}\OperatorTok{)} \OperatorTok{=}\NormalTok{ theta}\OperatorTok{(}\DecValTok{1}\OperatorTok{){-}}\NormalTok{theta}\OperatorTok{(}\DecValTok{0}\OperatorTok{);}
+\NormalTok{    t}\OperatorTok{(}\DecValTok{2}\OperatorTok{)} \OperatorTok{=}\NormalTok{ theta}\OperatorTok{(}\DecValTok{0}\OperatorTok{)} \OperatorTok{+} \FloatTok{1.0}\OperatorTok{;}
+\NormalTok{    model\_\_}\OperatorTok{.}\NormalTok{sparseLinL1Constraint}\OperatorTok{(}\NormalTok{t}\OperatorTok{,}\FloatTok{2.0}\OperatorTok{);} \CommentTok{// specify the constraint}
+  \OperatorTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+It is assumed that matrix \(\mathbf A\) is a sparse matrix.
+
+\hypertarget{sparse-linear-l2-constraints}{%
+\subsection{\texorpdfstring{Sparse Linear \(L^2\) constraints}{Sparse Linear L\^{}2 constraints}}\label{sparse-linear-l2-constraints}}
+
+Similar as above, but for \(L^2\) norm, i.e.~
+\[
+\parallel \mathbf A \boldsymbol \theta - \mathbf b \parallel_2 < c.
+\]
+Specified using \texttt{sparseLinL2Constraint()}.
+
+\hypertarget{non-linear-constraints}{%
+\section{Non-linear constraints}\label{non-linear-constraints}}
+
+Suppose the the constraint may be written as
+\[
+F(\mathbf A \boldsymbol \theta - \mathbf b)>0
+\]
+for some non-linear function \(F:\mathbb R^p \mapsto \mathbb R\), a constant matrix \(\mathbf A\) with \(p\) rows and a constant vector \(\mathbf b \in \mathbb R^p\). Further, it is assumed that the gradient of \(F\) may be computed, either analytically or at least be found efficiently using automatic differentiation.
+
+Note that \(A\) may in principle be the identity matrix, but it is often the case that \(p\) is much smaller than the dimension of \(\theta\). Such constraints should be specified via a functor class and the \texttt{sparseLinFunConstraint()}-function.
+
+Technical details regarding the constraint functor are found below in Section \ref{constraint-functor-details}. First, a working example of the functor representing \(F(\mathbf z)=1-\frac{1}{2}\mathbf z^T \mathbf z\) is considered. The functor should both include code evaluating \(F\) itself and also \(F\) and the gradient of \(F\):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{class}\NormalTok{ L2fun }\OperatorTok{:} \KeywordTok{public}\NormalTok{ constraintFunctor }\OperatorTok{\{}
+\KeywordTok{public}\OperatorTok{:}
+  \CommentTok{// evaluates F only}
+  \KeywordTok{inline} \DataTypeTok{double} \KeywordTok{operator}\OperatorTok{()(}\AttributeTok{const}\NormalTok{ Eigen}\OperatorTok{::}\NormalTok{VectorXd}\OperatorTok{\&}\NormalTok{ arg}\OperatorTok{)} \AttributeTok{const} \OperatorTok{\{}
+    \ControlFlowTok{return}\OperatorTok{(}\FloatTok{1.0}\OperatorTok{{-}}\FloatTok{0.5}\OperatorTok{*}\NormalTok{arg}\OperatorTok{.}\NormalTok{squaredNorm}\OperatorTok{());} 
+  \OperatorTok{\}}
+  \CommentTok{// evaluates F and the gradient of F stored in grad}
+  \KeywordTok{inline} \DataTypeTok{double} \KeywordTok{operator}\OperatorTok{()(}\AttributeTok{const}\NormalTok{ Eigen}\OperatorTok{::}\NormalTok{VectorXd}\OperatorTok{\&}\NormalTok{ arg}\OperatorTok{,}
+\NormalTok{                         Eigen}\OperatorTok{::}\NormalTok{VectorXd}\OperatorTok{\&}\NormalTok{ grad}\OperatorTok{)} \AttributeTok{const} \OperatorTok{\{}
+\NormalTok{    grad }\OperatorTok{=} \OperatorTok{{-}}\NormalTok{arg}\OperatorTok{;} \CommentTok{// gradient of F}
+    \ControlFlowTok{return}\OperatorTok{(}\KeywordTok{operator}\OperatorTok{()(}\NormalTok{arg}\OperatorTok{));} \CommentTok{// return value of F itself}
+  \OperatorTok{\}}
+  \CommentTok{// arbitrary name}
+  \KeywordTok{inline} \BuiltInTok{std::}\NormalTok{string}\OperatorTok{ }\NormalTok{name}\OperatorTok{()} \AttributeTok{const} \OperatorTok{\{}\ControlFlowTok{return} \StringTok{"L2fun\_\_"}\OperatorTok{;\}}
+\OperatorTok{\};}
+\end{Highlighting}
+\end{Shaded}
+
+Further, the model specification should include an instance of the functor, and a
+call to the model-member function \texttt{sparseLinFunConstraint()}, e.g.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{using} \KeywordTok{namespace}\NormalTok{ amt}\OperatorTok{;}
+\KeywordTok{struct}\NormalTok{ model}\OperatorTok{\{}
+\NormalTok{  L2fun functor}\OperatorTok{;}
+  \CommentTok{/* ... */}
+  \KeywordTok{template} \OperatorTok{\textless{}} \KeywordTok{class}\NormalTok{ varType}\OperatorTok{,} \KeywordTok{class}\NormalTok{ tensorType}\OperatorTok{,} \DataTypeTok{bool}\NormalTok{ storeNames}\OperatorTok{\textgreater{}}
+  \DataTypeTok{void} \KeywordTok{operator}\OperatorTok{()(}\NormalTok{amt}\OperatorTok{::}\NormalTok{amtModel}\OperatorTok{\textless{}}\NormalTok{varType}\OperatorTok{,}\NormalTok{tensorType}\OperatorTok{,}\NormalTok{storeNames}\OperatorTok{\textgreater{}} \OperatorTok{\&}\NormalTok{model\_\_}\OperatorTok{)\{}
+\NormalTok{    PARAMETER\_VECTOR}\OperatorTok{(}\NormalTok{x}\OperatorTok{,}\DecValTok{5}\OperatorTok{);}
+    
+    \CommentTok{/* model etc... */}
+      
+    \CommentTok{// ensures that 0.5*sqrt(sum(x[0:2]\^{}2))\textless{}1.0}
+\NormalTok{    model\_\_}\OperatorTok{.}\NormalTok{sparseLinFunConstraint}\OperatorTok{(}\NormalTok{x}\OperatorTok{.}\NormalTok{head}\OperatorTok{(}\DecValTok{3}\OperatorTok{),}\NormalTok{functor}\OperatorTok{);} 
+  \OperatorTok{\}}
+\OperatorTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{constraint-functor-details}{%
+\subsection{Details of the constraint functor}\label{constraint-functor-details}}
+
+The functor representing \(F\) \textbf{must} inherit virtual base class
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{class}\NormalTok{ constraintFunctor}\OperatorTok{\{}
+\KeywordTok{public}\OperatorTok{:}
+  \KeywordTok{virtual} \DataTypeTok{double} \KeywordTok{operator}\OperatorTok{()(}\AttributeTok{const}\NormalTok{ Eigen}\OperatorTok{::}\NormalTok{VectorXd}\OperatorTok{\&}\NormalTok{ arg}\OperatorTok{)} \AttributeTok{const} \OperatorTok{=} \DecValTok{0}\OperatorTok{;}
+  \KeywordTok{virtual} \DataTypeTok{double} \KeywordTok{operator}\OperatorTok{()(}\AttributeTok{const}\NormalTok{ Eigen}\OperatorTok{::}\NormalTok{VectorXd}\OperatorTok{\&}\NormalTok{ arg}\OperatorTok{,}
+\NormalTok{                          Eigen}\OperatorTok{::}\NormalTok{VectorXd}\OperatorTok{\&}\NormalTok{ grad}\OperatorTok{)} \AttributeTok{const}  \OperatorTok{=} \DecValTok{0}\OperatorTok{;}
+  \KeywordTok{virtual} \KeywordTok{inline} \BuiltInTok{std::}\NormalTok{string}\OperatorTok{ }\NormalTok{name}\OperatorTok{()} \AttributeTok{const} \OperatorTok{\{}\ControlFlowTok{return} \StringTok{"unnamed constraint functor"}\OperatorTok{;\}}
+\OperatorTok{\};}
+\end{Highlighting}
+\end{Shaded}
+
+Additional member functions/non-trivial constructors may be added as necessary.
+
+The \texttt{pdmphmc} package comes with a simple forward mode automatic differentiation library \texttt{FMVAD} which may be used to calculate the required gradient if the gradient is complicated to code. The library is yet to be documented.
+
+\hypertarget{worked-example}{%
+\section{Worked example}\label{worked-example}}
+
+The following code is contained in file \texttt{constraint\_model.cpp} :
+
+\begin{Shaded}
+\begin{Highlighting}[]
+
+\KeywordTok{class}\NormalTok{ nonLinFun }\OperatorTok{:} \KeywordTok{public}\NormalTok{ constraintFunctor }\OperatorTok{\{}
+\KeywordTok{public}\OperatorTok{:}
+  \CommentTok{// evaluates F only}
+  \KeywordTok{inline} \DataTypeTok{double} \KeywordTok{operator}\OperatorTok{()(}\AttributeTok{const}\NormalTok{ Eigen}\OperatorTok{::}\NormalTok{VectorXd}\OperatorTok{\&}\NormalTok{ arg}\OperatorTok{)} \AttributeTok{const} \OperatorTok{\{}
+    \ControlFlowTok{return}\OperatorTok{(}\FloatTok{1.0} \OperatorTok{{-}}\NormalTok{ arg}\OperatorTok{(}\DecValTok{0}\OperatorTok{)*}\NormalTok{arg}\OperatorTok{(}\DecValTok{1}\OperatorTok{));} 
+  \OperatorTok{\}}
+  \CommentTok{// evaluates F and the gradient of F stored in grad}
+  \KeywordTok{inline} \DataTypeTok{double} \KeywordTok{operator}\OperatorTok{()(}\AttributeTok{const}\NormalTok{ Eigen}\OperatorTok{::}\NormalTok{VectorXd}\OperatorTok{\&}\NormalTok{ arg}\OperatorTok{,}
+\NormalTok{                         Eigen}\OperatorTok{::}\NormalTok{VectorXd}\OperatorTok{\&}\NormalTok{ grad}\OperatorTok{)} \AttributeTok{const} \OperatorTok{\{}
+    \ControlFlowTok{if}\OperatorTok{(}\NormalTok{grad}\OperatorTok{.}\NormalTok{size}\OperatorTok{()!=}\NormalTok{arg}\OperatorTok{.}\NormalTok{size}\OperatorTok{())}\NormalTok{ grad}\OperatorTok{.}\NormalTok{resize}\OperatorTok{(}\NormalTok{arg}\OperatorTok{.}\NormalTok{size}\OperatorTok{());}
+\NormalTok{    grad}\OperatorTok{.}\NormalTok{setZero}\OperatorTok{();}
+\NormalTok{    grad}\OperatorTok{(}\DecValTok{0}\OperatorTok{)} \OperatorTok{=} \OperatorTok{{-}}\NormalTok{arg}\OperatorTok{(}\DecValTok{1}\OperatorTok{);}
+\NormalTok{    grad}\OperatorTok{(}\DecValTok{1}\OperatorTok{)} \OperatorTok{=} \OperatorTok{{-}}\NormalTok{arg}\OperatorTok{(}\DecValTok{0}\OperatorTok{);} \CommentTok{// gradient of F}
+    \ControlFlowTok{return}\OperatorTok{(}\KeywordTok{operator}\OperatorTok{()(}\NormalTok{arg}\OperatorTok{));} \CommentTok{// return value of F itself}
+  \OperatorTok{\}}
+  \CommentTok{// arbitrary name}
+  \KeywordTok{inline} \BuiltInTok{std::}\NormalTok{string}\OperatorTok{ }\NormalTok{name}\OperatorTok{()} \AttributeTok{const} \OperatorTok{\{}\ControlFlowTok{return} \StringTok{"some\_constraint\_functor"}\OperatorTok{;\}}
+\OperatorTok{\};}
+
+
+\KeywordTok{using} \KeywordTok{namespace}\NormalTok{ amt}\OperatorTok{;}
+\KeywordTok{struct}\NormalTok{ model}\OperatorTok{\{}
+  
+\NormalTok{  nonLinFun }\VariableTok{functor\_}\OperatorTok{;}
+  
+\NormalTok{  DATA\_INT}\OperatorTok{(}\NormalTok{constrType}\OperatorTok{);} \CommentTok{// which constraint type to use, passed from R}
+  
+  \DataTypeTok{void}\NormalTok{ preProcess}\OperatorTok{()\{\}} \CommentTok{// not used in this example }
+  
+  \KeywordTok{template} \OperatorTok{\textless{}} \KeywordTok{class}\NormalTok{ varType}\OperatorTok{,} \KeywordTok{class}\NormalTok{ tensorType}\OperatorTok{,} \DataTypeTok{bool}\NormalTok{ storeNames}\OperatorTok{\textgreater{}}
+  \DataTypeTok{void} \KeywordTok{operator}\OperatorTok{()(}\NormalTok{amt}\OperatorTok{::}\NormalTok{amtModel}\OperatorTok{\textless{}}\NormalTok{varType}\OperatorTok{,}\NormalTok{tensorType}\OperatorTok{,}\NormalTok{storeNames}\OperatorTok{\textgreater{}} \OperatorTok{\&}\NormalTok{model\_\_}\OperatorTok{)\{}
+    
+    
+\NormalTok{    PARAMETER\_VECTOR}\OperatorTok{(}\NormalTok{x}\OperatorTok{,}\DecValTok{2}\OperatorTok{);} \CommentTok{// parameter (sampled quantity)}
+    \CommentTok{// x is bivariate normally distributed with correlation rho}
+    \CommentTok{// before any constraints are imposed}
+    \DataTypeTok{double}\NormalTok{ rho }\OperatorTok{=} \FloatTok{0.7}\OperatorTok{;}
+\NormalTok{    model\_\_}\OperatorTok{+=}\NormalTok{normal\_ld}\OperatorTok{(}\NormalTok{x}\OperatorTok{(}\DecValTok{0}\OperatorTok{),}\FloatTok{0.0}\OperatorTok{,}\FloatTok{1.0}\OperatorTok{);}
+\NormalTok{    model\_\_}\OperatorTok{+=}\NormalTok{normal\_ld}\OperatorTok{(}\NormalTok{x}\OperatorTok{(}\DecValTok{1}\OperatorTok{),}\NormalTok{rho}\OperatorTok{*}\NormalTok{x}\OperatorTok{(}\DecValTok{0}\OperatorTok{),}\NormalTok{sqrt}\OperatorTok{(}\FloatTok{1.0}\OperatorTok{{-}}\NormalTok{rho}\OperatorTok{*}\NormalTok{rho}\OperatorTok{));}
+    
+    \CommentTok{// now add the different constraints}
+    \ControlFlowTok{if}\OperatorTok{(}\NormalTok{constrType}\OperatorTok{==}\DecValTok{1}\OperatorTok{)\{}
+\NormalTok{      model\_\_}\OperatorTok{.}\NormalTok{linConstraint}\OperatorTok{(}\FloatTok{1.0}\OperatorTok{{-}}\NormalTok{x}\OperatorTok{(}\DecValTok{0}\OperatorTok{){-}}\NormalTok{x}\OperatorTok{(}\DecValTok{1}\OperatorTok{));}
+    \OperatorTok{\}} \ControlFlowTok{else} \ControlFlowTok{if}\OperatorTok{(}\NormalTok{constrType}\OperatorTok{==}\DecValTok{2}\OperatorTok{)\{}
+\NormalTok{      model\_\_}\OperatorTok{.}\NormalTok{sparseLinConstraint}\OperatorTok{(}\FloatTok{1.0}\OperatorTok{{-}}\NormalTok{x}\OperatorTok{(}\DecValTok{0}\OperatorTok{){-}}\NormalTok{x}\OperatorTok{(}\DecValTok{1}\OperatorTok{));}
+    \OperatorTok{\}} \ControlFlowTok{else} \ControlFlowTok{if}\OperatorTok{(}\NormalTok{constrType}\OperatorTok{==}\DecValTok{3}\OperatorTok{)\{}
+\NormalTok{      VectorXv z }\OperatorTok{=}\NormalTok{ x}\OperatorTok{;}
+\NormalTok{      z}\OperatorTok{(}\DecValTok{0}\OperatorTok{){-}=}\FloatTok{0.5}\OperatorTok{;}
+\NormalTok{      z}\OperatorTok{(}\DecValTok{1}\OperatorTok{){-}=}\FloatTok{0.25}\OperatorTok{;}
+\NormalTok{      model\_\_}\OperatorTok{.}\NormalTok{sparseLinL1Constraint}\OperatorTok{(}\NormalTok{z}\OperatorTok{,}\FloatTok{2.0}\OperatorTok{);}
+    \OperatorTok{\}} \ControlFlowTok{else} \ControlFlowTok{if}\OperatorTok{(}\NormalTok{constrType}\OperatorTok{==}\DecValTok{4}\OperatorTok{)\{}
+\NormalTok{      VectorXv z}\OperatorTok{(}\NormalTok{x}\OperatorTok{.}\NormalTok{size}\OperatorTok{());}
+\NormalTok{      z}\OperatorTok{(}\DecValTok{0}\OperatorTok{)} \OperatorTok{=}\NormalTok{ x}\OperatorTok{(}\DecValTok{0}\OperatorTok{)} \OperatorTok{+} \FloatTok{0.5}\OperatorTok{;}
+\NormalTok{      z}\OperatorTok{(}\DecValTok{1}\OperatorTok{)} \OperatorTok{=} \FloatTok{2.0}\OperatorTok{*}\NormalTok{x}\OperatorTok{(}\DecValTok{1}\OperatorTok{)} \OperatorTok{{-}} \FloatTok{0.5}\OperatorTok{*}\NormalTok{x}\OperatorTok{(}\DecValTok{0}\OperatorTok{)} \OperatorTok{{-}} \FloatTok{0.25}\OperatorTok{;}
+\NormalTok{      model\_\_}\OperatorTok{.}\NormalTok{sparseLinL2Constraint}\OperatorTok{(}\NormalTok{z}\OperatorTok{,}\FloatTok{2.0}\OperatorTok{);}
+    \OperatorTok{\}} \ControlFlowTok{else} \ControlFlowTok{if}\OperatorTok{(}\NormalTok{constrType}\OperatorTok{==}\DecValTok{5}\OperatorTok{)\{}
+\NormalTok{      model\_\_}\OperatorTok{.}\NormalTok{sparseLinFunConstraint}\OperatorTok{(}\NormalTok{x}\OperatorTok{,}\VariableTok{functor\_}\OperatorTok{);}
+    \OperatorTok{\}}
+  \OperatorTok{\}} 
+\OperatorTok{\};} \CommentTok{// end of struct}
+\end{Highlighting}
+\end{Shaded}
+
+The model is built and run without constraints using (note \texttt{step.type\ =\ "RKBS32"})
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mdl }\OtherTok{\textless{}{-}}\NormalTok{ pdmphmc}\SpecialCharTok{::}\FunctionTok{build}\NormalTok{(}\StringTok{"constraint\_model.cpp"}\NormalTok{,}\AttributeTok{step.type =} \StringTok{"RKBS32"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## model name : model
+\end{verbatim}
+
+\begin{verbatim}
+## process type : HMCProcessConstr
+\end{verbatim}
+
+\begin{verbatim}
+## Runge Kutta step type : RKBS32
+\end{verbatim}
+
+\begin{verbatim}
+## Transport map type : diagLinearTM_VARI
+\end{verbatim}
+
+\begin{verbatim}
+## compilation exited successfully
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# unconstrained}
+\NormalTok{fit }\OtherTok{\textless{}{-}}\NormalTok{ pdmphmc}\SpecialCharTok{::}\FunctionTok{run}\NormalTok{(mdl,}\AttributeTok{data=}\FunctionTok{list}\NormalTok{(}\AttributeTok{constrType=}\NormalTok{0L))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Note: no integrated samples recorded
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pdmphmc}\SpecialCharTok{::}\FunctionTok{pair.plot}\NormalTok{(fit,}\StringTok{"x[1]"}\NormalTok{,}\StringTok{"x[2]"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{_main_files/figure-latex/unnamed-chunk-29-1.pdf}
+
+\hypertarget{linear-constraints-dense-and-sparse}{%
+\subsection{Linear constraints (dense and sparse)}\label{linear-constraints-dense-and-sparse}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# (dense) linear constraint 1.0{-}x(0){-}x(1)\textgreater{}0}
+\NormalTok{fit }\OtherTok{\textless{}{-}}\NormalTok{ pdmphmc}\SpecialCharTok{::}\FunctionTok{run}\NormalTok{(mdl,}\AttributeTok{data=}\FunctionTok{list}\NormalTok{(}\AttributeTok{constrType=}\NormalTok{1L))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Note: no integrated samples recorded
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pdmphmc}\SpecialCharTok{::}\FunctionTok{pair.plot}\NormalTok{(fit,}\StringTok{"x[1]"}\NormalTok{,}\StringTok{"x[2]"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{_main_files/figure-latex/unnamed-chunk-30-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# linear constraint 1.0{-}x(0){-}x(1)\textgreater{}0}
+\NormalTok{fit }\OtherTok{\textless{}{-}}\NormalTok{ pdmphmc}\SpecialCharTok{::}\FunctionTok{run}\NormalTok{(mdl,}\AttributeTok{data=}\FunctionTok{list}\NormalTok{(}\AttributeTok{constrType=}\NormalTok{2L))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Note: no integrated samples recorded
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pdmphmc}\SpecialCharTok{::}\FunctionTok{pair.plot}\NormalTok{(fit,}\StringTok{"x[1]"}\NormalTok{,}\StringTok{"x[2]"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{_main_files/figure-latex/unnamed-chunk-31-1.pdf}
+
+\hypertarget{l1-constraint}{%
+\subsection{\texorpdfstring{\(L^1\) constraint}{L\^{}1 constraint}}\label{l1-constraint}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# L1 norm of (x(0){-}0.5,x(1){-}0.25) smaller than 2.0}
+\NormalTok{fit }\OtherTok{\textless{}{-}}\NormalTok{ pdmphmc}\SpecialCharTok{::}\FunctionTok{run}\NormalTok{(mdl,}\AttributeTok{data=}\FunctionTok{list}\NormalTok{(}\AttributeTok{constrType=}\NormalTok{3L))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Note: no integrated samples recorded
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pdmphmc}\SpecialCharTok{::}\FunctionTok{pair.plot}\NormalTok{(fit,}\StringTok{"x[1]"}\NormalTok{,}\StringTok{"x[2]"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{_main_files/figure-latex/unnamed-chunk-32-1.pdf}
+
+\hypertarget{l2-constraint}{%
+\subsection{\texorpdfstring{\(L^2\) constraint}{L\^{}2 constraint}}\label{l2-constraint}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# L2 norm of (x(0) + 0.5, 2.0*x(1) {-} 0.5*x(0) {-} 0.25) smaller than 2.0}
+\NormalTok{fit }\OtherTok{\textless{}{-}}\NormalTok{ pdmphmc}\SpecialCharTok{::}\FunctionTok{run}\NormalTok{(mdl,}\AttributeTok{data=}\FunctionTok{list}\NormalTok{(}\AttributeTok{constrType=}\NormalTok{4L))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Note: no integrated samples recorded
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pdmphmc}\SpecialCharTok{::}\FunctionTok{pair.plot}\NormalTok{(fit,}\StringTok{"x[1]"}\NormalTok{,}\StringTok{"x[2]"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{_main_files/figure-latex/unnamed-chunk-33-1.pdf}
+
+\hypertarget{general-nonlinear-constraint}{%
+\subsection{General nonlinear constraint}\label{general-nonlinear-constraint}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# nonlinear;}
+\NormalTok{fit }\OtherTok{\textless{}{-}}\NormalTok{ pdmphmc}\SpecialCharTok{::}\FunctionTok{run}\NormalTok{(mdl,}\AttributeTok{data=}\FunctionTok{list}\NormalTok{(}\AttributeTok{constrType=}\NormalTok{5L))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Note: no integrated samples recorded
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pdmphmc}\SpecialCharTok{::}\FunctionTok{pair.plot}\NormalTok{(fit,}\StringTok{"x[1]"}\NormalTok{,}\StringTok{"x[2]"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{_main_files/figure-latex/unnamed-chunk-34-1.pdf}
 
 \hypertarget{amt-lib}{%
 \chapter{\texorpdfstring{The \texttt{amt}-library}{The amt-library}}\label{amt-lib}}
@@ -846,19 +1235,19 @@ A complete class where the above code block is the body of the \texttt{operator(
 
 \begin{verbatim}
 ##                 mean se_mean     sd n_eff  Rhat
-## P_internal[1]  3.581   0.010  0.488  2510 1.004
-## P_internal[2]  3.468   0.010  0.496  2434 1.003
-## P_internal[3]  3.327   0.010  0.547  3142 1.002
-## P_internal[4] -0.002   0.007  0.369  3186 1.002
-## P_internal[5] -0.015   0.007  0.363  3108 1.002
-## P_internal[6]  0.006   0.008  0.376  2486 1.001
-## P[1,1]        40.116   0.363 18.498  2591 1.003
-## P[2,1]         0.070   0.235 13.368  3240 1.001
-## P[3,1]        -0.438   0.230 12.823  3110 1.001
-## P[2,2]        40.328   0.352 17.892  2585 1.006
-## P[3,2]         0.358   0.248 12.767  2657 1.001
-## P[3,3]        40.056   0.310 18.198  3437 1.001
-## P13           -0.438   0.230 12.823  3110 1.001
+## P_internal[1]  3.578   0.010  0.485  2492 1.005
+## P_internal[2]  3.466   0.010  0.497  2431 1.003
+## P_internal[3]  3.330   0.009  0.539  3209 1.002
+## P_internal[4]  0.000   0.007  0.370  3153 1.002
+## P_internal[5] -0.009   0.007  0.365  3057 1.001
+## P_internal[6]  0.006   0.008  0.378  2498 1.001
+## P[1,1]        39.964   0.364 18.438  2565 1.005
+## P[2,1]         0.124   0.236 13.323  3176 1.002
+## P[3,1]        -0.229   0.236 13.037  3037 1.000
+## P[2,2]        40.288   0.353 17.848  2559 1.005
+## P[3,2]         0.341   0.245 12.695  2680 1.001
+## P[3,3]        40.141   0.312 18.027  3330 1.001
+## P13           -0.229   0.236 13.037  3037 1.000
 \end{verbatim}
 
 \begin{verbatim}
@@ -867,13 +1256,13 @@ A complete class where the above code block is the body of the \texttt{operator(
 
 \begin{verbatim}
 ##        estimate se_estimate n_eff  Rhat
-## P[1,1]   39.693       0.193  1653 1.006
-## P[2,1]    0.013       0.054  7358 1.040
-## P[3,1]    0.043       0.054  6789 1.034
-## P[2,2]   40.261       0.181  1778 1.005
-## P[3,2]    0.158       0.111  1852 1.003
-## P[3,3]   40.214       0.166  2184 1.002
-## P13       0.043       0.054  6789 1.034
+## P[1,1]   39.673       0.190  1690 1.006
+## P[2,1]    0.025       0.054  7448 1.040
+## P[3,1]    0.052       0.054  6768 1.033
+## P[2,2]   40.231       0.182  1733 1.004
+## P[3,2]    0.156       0.110  1972 1.003
+## P[3,3]   40.250       0.166  2207 1.002
+## P13       0.052       0.054  6768 1.033
 \end{verbatim}
 
 \begin{verbatim}
@@ -1067,7 +1456,18 @@ It is also possible to specify ones own metric tensor. One turns off the default
 \hypertarget{ODE-solvers}{%
 \section{ODE solvers}\label{ODE-solvers}}
 
-So far, only the order 5 (4) pair of \citet{DORMAND198019} with dense output is used for integrating the differential equations. A PI controller is used for adaptive time step sizes.
+The ODE solver is a bespoke Runge Kutta method with a PI controller for adaptive time step sizes. The Runge Kutta type steps (including dense formulas) implemented so far are
+
+\begin{itemize}
+\tightlist
+\item
+  The order 5 (4) pair of \citet{DORMAND198019} (obtained by choosing \texttt{step.type\ =\ "RKDP54"} in \texttt{build()}).
+\item
+  The order 3 (2) pair of \citet{BOGACKI1989321} (obtained by choosing \texttt{step.type\ =\ "RKBS32"} in \texttt{build()})
+\end{itemize}
+
+The latter is generally preferred only for models with constraints (see Section \ref{constraints}) or when running with
+very lax integration tolerances.
 
 \hypertarget{scaling-adaptation}{%
 \section{Scaling adaptation}\label{scaling-adaptation}}
