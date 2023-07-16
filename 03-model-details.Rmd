@@ -225,6 +225,7 @@ Some minor comments related to performance are in order here:
 
 - As seen in the example above, `double` values (or vectors or matrices thereof) should ideally be passed to the `generated()` functions. This is in order of avoiding unnecessary AD computations. In particular, if the generated function is a complicated function of the parameters (for which function `quadNorm()` may serve as a placeholder), the computations leading up to the generated quantity should be done in double-variables.
 
+
 - In models where $\boldsymbol \theta$ is high-dimensional and parts of $\boldsymbol \theta$ are of less interest, the default behavior of storing samples of all of $\boldsymbol \theta$ may be overridden by using the `store.pars` argument in `pdmphmc::run()`. Reducing the number of stored quantities leads to both memory savings and savings in terms of computing time.
 
 
