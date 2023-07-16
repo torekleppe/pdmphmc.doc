@@ -12,9 +12,6 @@ description: |
 link-citations: yes
 ---
 
-```{r,echo=FALSE}
-knitr::include_graphics("cover_image.png")
-```
 
 ```{r, echo=FALSE}
 eval.examples= TRUE #FALSE # 

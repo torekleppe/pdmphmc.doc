@@ -23,7 +23,7 @@
 <meta name="author" content="Tore Selland Kleppe" />
 
 
-<meta name="date" content="2023-07-13" />
+<meta name="date" content="2023-07-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -464,19 +464,19 @@ call to the model-member function <code>sparseLinFunConstraint()</code>, e.g.</p
 <span id="cb66-2"><a href="constraints.html#cb66-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(mdl,<span class="at">data=</span><span class="fu">list</span>(<span class="at">constrType=</span>0L))</span></code></pre></div>
 <pre><code>## Note: no integrated samples recorded</code></pre>
 <div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="constraints.html#cb68-1" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">pair.plot</span>(fit,<span class="st">&quot;x[1]&quot;</span>,<span class="st">&quot;x[2]&quot;</span>)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 <div id="linear-constraints-dense-and-sparse" class="section level3 hasAnchor" number="5.4.1">
 <h3><span class="header-section-number">5.4.1</span> Linear constraints (dense and sparse)<a href="constraints.html#linear-constraints-dense-and-sparse" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="constraints.html#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># (dense) linear constraint 1.0-x(0)-x(1)&gt;0</span></span>
 <span id="cb69-2"><a href="constraints.html#cb69-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(mdl,<span class="at">data=</span><span class="fu">list</span>(<span class="at">constrType=</span>1L))</span></code></pre></div>
 <pre><code>## Note: no integrated samples recorded</code></pre>
 <div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="constraints.html#cb71-1" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">pair.plot</span>(fit,<span class="st">&quot;x[1]&quot;</span>,<span class="st">&quot;x[2]&quot;</span>)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
 <div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="constraints.html#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># linear constraint 1.0-x(0)-x(1)&gt;0</span></span>
 <span id="cb72-2"><a href="constraints.html#cb72-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(mdl,<span class="at">data=</span><span class="fu">list</span>(<span class="at">constrType=</span>2L))</span></code></pre></div>
 <pre><code>## Note: no integrated samples recorded</code></pre>
 <div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="constraints.html#cb74-1" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">pair.plot</span>(fit,<span class="st">&quot;x[1]&quot;</span>,<span class="st">&quot;x[2]&quot;</span>)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
 </div>
 <div id="l1-constraint" class="section level3 hasAnchor" number="5.4.2">
 <h3><span class="header-section-number">5.4.2</span> <span class="math inline">\(L^1\)</span> constraint<a href="constraints.html#l1-constraint" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -484,7 +484,7 @@ call to the model-member function <code>sparseLinFunConstraint()</code>, e.g.</p
 <span id="cb75-2"><a href="constraints.html#cb75-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(mdl,<span class="at">data=</span><span class="fu">list</span>(<span class="at">constrType=</span>3L))</span></code></pre></div>
 <pre><code>## Note: no integrated samples recorded</code></pre>
 <div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="constraints.html#cb77-1" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">pair.plot</span>(fit,<span class="st">&quot;x[1]&quot;</span>,<span class="st">&quot;x[2]&quot;</span>)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
 </div>
 <div id="l2-constraint" class="section level3 hasAnchor" number="5.4.3">
 <h3><span class="header-section-number">5.4.3</span> <span class="math inline">\(L^2\)</span> constraint<a href="constraints.html#l2-constraint" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -492,7 +492,7 @@ call to the model-member function <code>sparseLinFunConstraint()</code>, e.g.</p
 <span id="cb78-2"><a href="constraints.html#cb78-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(mdl,<span class="at">data=</span><span class="fu">list</span>(<span class="at">constrType=</span>4L))</span></code></pre></div>
 <pre><code>## Note: no integrated samples recorded</code></pre>
 <div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="constraints.html#cb80-1" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">pair.plot</span>(fit,<span class="st">&quot;x[1]&quot;</span>,<span class="st">&quot;x[2]&quot;</span>)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
 </div>
 <div id="general-nonlinear-constraint" class="section level3 hasAnchor" number="5.4.4">
 <h3><span class="header-section-number">5.4.4</span> General nonlinear constraint<a href="constraints.html#general-nonlinear-constraint" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -500,7 +500,7 @@ call to the model-member function <code>sparseLinFunConstraint()</code>, e.g.</p
 <span id="cb81-2"><a href="constraints.html#cb81-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> pdmphmc<span class="sc">::</span><span class="fu">run</span>(mdl,<span class="at">data=</span><span class="fu">list</span>(<span class="at">constrType=</span>5L))</span></code></pre></div>
 <pre><code>## Note: no integrated samples recorded</code></pre>
 <div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="constraints.html#cb83-1" aria-hidden="true" tabindex="-1"></a>pdmphmc<span class="sc">::</span><span class="fu">pair.plot</span>(fit,<span class="st">&quot;x[1]&quot;</span>,<span class="st">&quot;x[2]&quot;</span>)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
 
 </div>
 </div>
