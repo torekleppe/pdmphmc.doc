@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 documentclass: book
 bibliography: [book.bib, packages.bib]
-url: https://torekleppe.github.io/pdmphmc.doc/
+#url: https://torekleppe.github.io/pdmphmc.doc/
 #cover-image: ./cover_image.pdf
 description: |
   Description in index.Rmd
