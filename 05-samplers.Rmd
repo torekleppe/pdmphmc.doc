@@ -1,7 +1,6 @@
 
 # The sampling algorithms {#the-samplers} 
 
-
 As the name of the package indicates, the samplers in employed in this package are based on piecewise deterministic Markov processes (see e.g. @fearnhead2018) with Hamiltonian dynamic between events (see @kleppe_CTHMC).
 
 Two distinct such samplers are so far implemented: fixed mass (section \@ref(fixed-mass-sampler)) and Riemannian manifold (Section \@ref(Riemann-manifold)). The Hamiltonians, which are fully specifies the between event dynamics are provided below.
